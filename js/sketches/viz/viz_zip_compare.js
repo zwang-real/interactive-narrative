@@ -396,12 +396,9 @@
             var hoveredZip = hoveredFeature ? hoveredFeature.zip : null;
             var range = Math.max(0.0001, config.maxValue - config.minValue);
 
-            p.noStroke();
-            p.fill('#f8f3df');
-            p.rect(panel.x, panel.y, panel.w, panel.h, 0);
             p.noFill();
-            p.stroke('#2a2724');
-            p.strokeWeight(1.2);
+            p.stroke('#d7ddd9');
+            p.strokeWeight(1);
             p.rect(panel.x, panel.y, panel.w, panel.h, 0);
 
             p.noStroke();
@@ -502,12 +499,8 @@
             };
 
             p.push();
-            p.noStroke();
-            p.fill(255);
-            p.rect(left - 20, top - 12, w + 40, h + 24);
-
             this.drawPanel(p, leftPanel, {
-                title: 'Housing Prices Map',
+                title: 'Rent Prices by Year',
                 geoData: geoData,
                 values: housingYear.zipValues,
                 minValue: housingData.minValue,
@@ -524,7 +517,7 @@
             });
 
             this.drawPanel(p, rightPanel, {
-                title: 'Static Restaurant Rating Map',
+                title: 'Restaurant Ratings by Year',
                 geoData: geoData,
                 values: yelpYear.zipValues,
                 minValue: yelpData.minValue,
