@@ -1,4 +1,9 @@
 
+:root {
+  --page-left-gutter: 40px;
+  --page-right-gutter: 20px;
+}
+
 body {
   font-family: "Spectral", Georgia, serif;
 }
@@ -44,7 +49,7 @@ body {
 
 .container {
   width: 100%;
-  padding: 16px 20px 16px 40px;
+  padding: 16px var(--page-right-gutter) 16px var(--page-left-gutter);
   box-sizing: border-box;
   margin-top: 52px;
 }
@@ -135,8 +140,8 @@ body {
   justify-content: center;
   align-items: center;
   position: fixed;
-  left: calc(30vw + 40px);
-  right: 20px;
+  left: calc(30vw + var(--page-left-gutter));
+  right: var(--page-right-gutter);
   top: 68px;
   bottom: 0;
   z-index: 100;
@@ -191,8 +196,8 @@ body {
   pointer-events: none;
 }
 #graphic.layout-full-viz #vis {
-  left: 20px;
-  right: 20px;
+  left: var(--page-left-gutter);
+  right: var(--page-right-gutter);
 }
 
 #graphic.layout-viz-left #sections {
@@ -200,8 +205,8 @@ body {
   margin-left: calc(70vw - 40px);
 }
 #graphic.layout-viz-left #vis {
-  left: 20px;
-  right: calc(30vw + 40px);
+  left: var(--page-left-gutter);
+  right: calc(30vw + var(--page-right-gutter));
 }
 
 @media (max-width: 700px) {

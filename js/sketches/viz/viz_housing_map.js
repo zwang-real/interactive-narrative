@@ -79,8 +79,12 @@
     function colorRamp(p, t) {
         var stops = [
             { at: 0, color: p.color('#C8E4F5') },
-            { at: 0.45, color: p.color('#94CBEC') },
-            { at: 1, color: p.color('#0072B2') }
+            { at: 1 / 6, color: p.color('#94CBEC') },
+            { at: 2 / 6, color: p.color('#0072B2') },
+            { at: 3 / 6, color: p.color('#F0E442') },
+            { at: 4 / 6, color: p.color('#FFBB24') },
+            { at: 5 / 6, color: p.color('#E69F00') },
+            { at: 1, color: p.color('#7E2954') }
         ];
         var clamped = Math.max(0, Math.min(1, t));
 
@@ -212,6 +216,16 @@
         };
     }
 
+    function ringArea(ring) {
+        var area = 0;
+
+        for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+            area += (ring[j].x * ring[i].y) - (ring[i].x * ring[j].y);
+        }
+
+        return area / 2;
+    }
+
     function projectFeatures(boundaryData, projection) {
         return boundaryData.features.map(function (feature) {
             var projectedPolygons = feature.polygons.map(function (polygon) {
@@ -222,13 +236,34 @@
                 });
             });
             var labelPoint = projectPoint(feature.labelLon, feature.labelLat, projection);
+            var minX = Infinity;
+            var maxX = -Infinity;
+            var minY = Infinity;
+            var maxY = -Infinity;
+            var area = 0;
+
+            projectedPolygons.forEach(function (polygon) {
+                polygon.forEach(function (ring, ringIndex) {
+                    ring.forEach(function (point) {
+                        if (point.x < minX) minX = point.x;
+                        if (point.x > maxX) maxX = point.x;
+                        if (point.y < minY) minY = point.y;
+                        if (point.y > maxY) maxY = point.y;
+                    });
+
+                    var currentArea = Math.abs(ringArea(ring));
+                    area += ringIndex === 0 ? currentArea : -currentArea;
+                });
+            });
 
             return {
                 zip: feature.zip,
                 polygons: projectedPolygons,
                 labelX: labelPoint.x,
                 labelY: labelPoint.y,
-                labelScale: Math.max(feature.lonSpan, feature.latSpan)
+                labelScale: Math.max(feature.lonSpan, feature.latSpan),
+                bbox: { minX: minX, maxX: maxX, minY: minY, maxY: maxY },
+                area: Math.max(1, area)
             };
         });
     }
@@ -270,10 +305,19 @@
     }
 
     function findHoveredFeature(p, features) {
-        for (var i = features.length - 1; i >= 0; i--) {
-            if (pointInFeature(p.mouseX, p.mouseY, features[i])) return features[i];
+        var hovered = null;
+
+        for (var i = 0; i < features.length; i++) {
+            var feature = features[i];
+            var box = feature.bbox;
+            if (!box) continue;
+            if (p.mouseX < box.minX || p.mouseX > box.maxX || p.mouseY < box.minY || p.mouseY > box.maxY) continue;
+            if (!pointInFeature(p.mouseX, p.mouseY, feature)) continue;
+
+            if (!hovered || feature.area < hovered.area) hovered = feature;
         }
-        return null;
+
+        return hovered;
     }
 
     function drawFeature(p, feature) {
@@ -283,6 +327,15 @@
             polygon[0].forEach(function (point) {
                 p.vertex(point.x, point.y);
             });
+            for (var i = 1; i < polygon.length; i++) {
+                var hole = polygon[i];
+                if (hole.length < 3) continue;
+                p.beginContour();
+                hole.forEach(function (point) {
+                    p.vertex(point.x, point.y);
+                });
+                p.endContour();
+            }
             p.endShape(p.CLOSE);
         });
     }
@@ -372,9 +425,8 @@
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
             var sliderW = Math.min(300, w * 0.5);
             var sliderX = left + w * 0.34;
-            var sliderY = top + h + 62;
+            var sliderY = top + h + 48;
             var knobRadius = 9;
-            var activeValue = data.byYear[selectedYear] ? data.byYear[selectedYear].cityAverage : 0;
             var slider = { x: sliderX, y: sliderY, w: sliderW, progress: progress, knobRadius: knobRadius };
 
             this.handleSliderInteraction(p, manager, data, slider);
@@ -382,7 +434,6 @@
             selectedYear = this.getSelectedYear(manager, data);
             index = Math.max(0, years.indexOf(selectedYear));
             progress = years.length > 1 ? index / (years.length - 1) : 1;
-            activeValue = data.byYear[selectedYear] ? data.byYear[selectedYear].cityAverage : 0;
 
             p.textAlign(p.CENTER, p.CENTER);
             p.textFont('IBM Plex Mono');
@@ -412,20 +463,12 @@
             p.text(String(minYear), sliderX, sliderY + 12);
             p.textAlign(p.RIGHT, p.TOP);
             p.text(String(maxYear), sliderX + sliderW, sliderY + 12);
-
-            p.textAlign(p.CENTER, p.TOP);
-            p.textSize(11);
-            p.text(
-                activeValue ? 'Citywide ZIP average: $' + Math.round(activeValue).toLocaleString() : 'No data for selected year',
-                sliderX + sliderW / 2,
-                sliderY + 28
-            );
         },
 
-        drawLegend: function (p, left, top, minValue, maxValue) {
+        drawLegend: function (p, left, top, h, minValue, maxValue) {
             var legendW = 250;
             var legendX = left + 22;
-            var legendY = top + 26;
+            var legendY = top + h + 18;
             var steps = 80;
 
             p.noStroke();
@@ -461,12 +504,12 @@
             var top = (manager.offsetY || 0) + 26;
             var w = (manager.width || 600) - 64;
             var h = (manager.height || 520) - 122;
-            var mapLeft = left + 10;
-            var mapTop = top + 62;
+            var mapLeft = left - 14;
+            var mapTop = top + 26;
             var mapW = Math.min(560, w * 0.72);
             var mapH = Math.min(640, h * 1.04);
             var infoX = left + w * 0.73;
-            var infoY = top + 108;
+            var infoY = top + 84;
             var cityDelta = previous ? (selected.cityAverage - previous.cityAverage) : 0;
             var hoveredZip = null;
             var hoveredValue = 0;
@@ -480,18 +523,6 @@
             p.noStroke();
             p.fill('#f7f8f8');
             p.rect(left - 28, top - 18, w + 56, h + 128);
-
-            p.fill(28);
-            p.textFont('Spectral');
-            p.textStyle(p.BOLD);
-            p.textSize(23);
-            p.textAlign(p.CENTER, p.CENTER);
-            p.text('HOUSING\nPRICES\nMAP', left + w * 0.63, top + 34);
-
-            p.noFill();
-            p.stroke(30);
-            p.strokeWeight(1);
-            p.ellipse(left + w * 0.63, top + 34, Math.min(w * 0.52, 300), 98);
 
             p.noStroke();
             p.fill('#eef2f3');
@@ -549,57 +580,49 @@
             p.textAlign(p.LEFT, p.TOP);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(15);
+            p.textSize(13);
             p.text(hoveredZip ? 'ZIP ' + hoveredZip : 'Philadelphia ZIP SAFMR', infoX, infoY);
 
             p.textFont('IBM Plex Mono');
-            p.textSize(30);
-            p.text(selectedYear, infoX, infoY + 24);
+            p.textSize(24);
+            p.text(selectedYear, infoX, infoY + 20);
 
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(12);
+            p.textSize(11);
             p.fill('#5b5550');
             p.text(
                 hoveredZip
                     ? 'Hovered ZIP average across 0BR to 4BR SAFMR values for the selected year.'
-                    : 'Census ZCTA boundaries drawn directly in p5. Drag the slider to see rent changes over time.',
+                    : 'Drag the slider to see rent changes over time.',
                 infoX,
-                infoY + 72,
-                Math.min(220, w * 0.24),
-                78
+                infoY + 60,
+                Math.min(196, w * 0.22),
+                68
             );
 
             var mainValue = hoveredZip ? hoveredValue : selected.cityAverage;
             var deltaValue = hoveredZip ? hoveredDelta : cityDelta;
             p.fill('#111111');
             p.textStyle(p.BOLD);
-            p.textSize(28);
-            p.text(mainValue ? '$' + Math.round(mainValue).toLocaleString() : 'No data', infoX, infoY + 154);
+            p.textSize(22);
+            p.text(mainValue ? '$' + Math.round(mainValue).toLocaleString() : 'No data', infoX, infoY + 132);
 
             p.textStyle(p.NORMAL);
-            p.textSize(12);
+            p.textSize(11);
             p.fill(deltaValue >= 0 ? '#0a5d2c' : '#8a2332');
             p.text(
                 previous
                     ? ((deltaValue >= 0 ? '+' : '-') + '$' + Math.round(Math.abs(deltaValue)).toLocaleString() + ' vs previous year')
                     : 'No previous-year comparison',
                 infoX,
-                infoY + 190
+                infoY + 162
             );
 
             p.fill(35);
             p.textAlign(p.CENTER, p.TOP);
             p.textSize(12);
-            p.text(
-                boundaryData && boundaryData.features && boundaryData.features.length
-                    ? 'Philadelphia ZCTA boundaries with SAFMR values by year'
-                    : 'Philadelphia ZIP housing map',
-                mapLeft + mapW / 2,
-                mapTop + mapH + 4
-            );
-
-            this.drawLegend(p, left, top, data.minValue, data.maxValue);
+            this.drawLegend(p, left, top, h, data.minValue, data.maxValue);
             this.drawSlider(p, manager, data, selectedYear, left, top, w, h);
             p.pop();
         }
