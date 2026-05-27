@@ -385,7 +385,7 @@
             activeValue = data.byYear[selectedYear] ? data.byYear[selectedYear].cityAverage : 0;
 
             p.textAlign(p.CENTER, p.CENTER);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(12);
             p.fill(54);
@@ -436,13 +436,13 @@
             }
 
             p.fill(28);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(13);
             p.textAlign(p.LEFT, p.BOTTOM);
             p.text('Lower SAFMR to Higher SAFMR', legendX, legendY - 4);
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
             p.textAlign(p.LEFT, p.TOP);
@@ -529,7 +529,7 @@
 
                     p.noStroke();
                     p.fill(textColorFor(p, fillColor));
-                    p.textFont('Spectral');
+                    p.textFont('IBM Plex Mono');
                     p.textStyle(hoveredZip === feature.zip ? p.BOLD : p.NORMAL);
                     p.textAlign(p.CENTER, p.CENTER);
                     p.textSize(fontSize);
@@ -540,23 +540,23 @@
                 p.rect(mapLeft, mapTop, mapW, mapH, 18);
                 p.fill('#5b5550');
                 p.textAlign(p.CENTER, p.CENTER);
-                p.textFont('Spectral');
+                p.textFont('IBM Plex Mono');
                 p.textSize(12);
                 p.text('ZIP boundary file unavailable', mapLeft + mapW / 2, mapTop + mapH / 2);
             }
 
             p.fill('#111111');
             p.textAlign(p.LEFT, p.TOP);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(15);
             p.text(hoveredZip ? 'ZIP ' + hoveredZip : 'Philadelphia ZIP SAFMR', infoX, infoY);
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textSize(30);
             p.text(selectedYear, infoX, infoY + 24);
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(12);
             p.fill('#5b5550');

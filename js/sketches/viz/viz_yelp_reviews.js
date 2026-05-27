@@ -53,7 +53,7 @@
             p.fill(255);
             p.rect(left - 28, top - 24, w + 52, h + 84);
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
             p.fill(82);
@@ -96,7 +96,7 @@
 
             p.noStroke();
             p.fill(20);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(16);
             p.textAlign(p.CENTER, p.TOP);
@@ -107,7 +107,7 @@
             p.text('rating', 0, 0);
             p.pop();
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textAlign(p.LEFT, p.TOP);
             p.textSize(13);
