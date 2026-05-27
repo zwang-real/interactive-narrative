@@ -186,6 +186,26 @@
   right: 20px;
 }
 
+#graphic.layout-viz-left #sections {
+  display: block;
+  margin-left: calc(70vw - 40px);
+}
+#graphic.layout-viz-left #vis {
+  left: 20px;
+  right: calc(30vw + 40px);
+}
+
+@media (max-width: 700px) {
+  #graphic.layout-viz-left #sections {
+    width: 100%;
+    margin-left: 0;
+  }
+  #graphic.layout-viz-left #vis {
+    left: auto;
+    right: auto;
+  }
+}
+
 /* visibility helpers for popup effect controlled by VisualController */
 .vis-hidden {
   opacity: 0;

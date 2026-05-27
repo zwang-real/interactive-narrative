@@ -14,8 +14,31 @@
                 manager.data = data;
             }
 
-            computeLayout([]);
-            return Promise.resolve(manager.data);
+            var yelpDataRequest = fetch('data/yelp_filtered/yelp_restaurants_philadelphia_zips.json')
+                .then(function (response) { return response.json(); })
+                .catch(function () { return []; });
+            var housingDataRequest = fetch('data/philadelphia_safmr_master.csv')
+                .then(function (response) {
+                    if (!response.ok) return '';
+                    return response.text();
+                })
+                .catch(function () { return ''; });
+
+            return Promise.all([yelpDataRequest, housingDataRequest])
+                .then(function (results) {
+                    var yelpData = results[0];
+                    var housingData = results[1];
+                    computeLayout(yelpData);
+                    manager.yelpReviewData = window.VizYelpReviews.prepareData(yelpData);
+                    manager.housingMapData = window.VizHousingMap.prepareData(housingData);
+                    return manager.data;
+                })
+                .catch(function () {
+                    computeLayout([]);
+                    manager.yelpReviewData = window.VizYelpReviews.prepareData([]);
+                    manager.housingMapData = window.VizHousingMap.prepareData('');
+                    return manager.data;
+                });
         },
 
         draw: function (p, manager, ai, progress) {
@@ -25,12 +48,22 @@
                 return;
             }
 
+            if (ai === 2) {
+                window.VizYelpReviews.draw(p, manager, ai, progress);
+                return;
+            }
+
             if (ai === 6  || ai === 9) {
                 window.VizProgressColor.draw(p, manager, ai, progress);
                 return;
             }
 
-            if ((ai >= 4 && ai < 6)) {
+            if (ai === 4) {
+                window.VizHousingMap.draw(p, manager, ai, progress);
+                return;
+            }
+
+            if (ai === 5) {
                 window.VizScatter.draw(p, manager, ai, progress);
                 return;
             }

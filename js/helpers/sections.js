@@ -100,7 +100,7 @@
                         // apply layout class from data-layout attribute
                         var graphic = document.querySelector('#graphic');
                         if (graphic) {
-                            graphic.classList.remove('layout-full-text', 'layout-full-viz');
+                            graphic.classList.remove('layout-full-text', 'layout-full-viz', 'layout-viz-left');
                             var layout = sc.steps[index] && sc.steps[index].dataset && sc.steps[index].dataset.layout;
                             if (layout) graphic.classList.add('layout-' + layout);
                             requestAnimationFrame(function () {

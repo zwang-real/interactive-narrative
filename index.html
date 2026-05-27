@@ -27,18 +27,18 @@
           Note that each section in index.html corresponds to a section in the
           scrolling article. You can add or remove sections as needed.
         </section>
-        <section class="step" data-active-index="2">
-          <div class="title">No visualization</div>
-          You don't need to have a visualization for every section. Some sections may simply be text.
+        <section class="step" data-active-index="2" data-layout="viz-left">
+          <div class="title">Reviews and Ratings</div>
+          Each circle is a Philadelphia restaurant. The x-axis shows review count, the y-axis shows rating, and larger circles indicate more reviews. Dotted lines mark the mean review count and mean rating.
         </section>
         <section class="step" data-active-index="3">
           <div class="title">Narrative</div>
           These sections will tell a story. You can use them to explain the visualization, provide context,
           or share insights.
         </section>
-        <section class="step" data-active-index="4">
-          <div class="title">Be creative</div>
-          Surprise your readers with interesting interactions, animations, or data visualizations.
+        <section class="step" data-active-index="4" data-layout="viz-left">
+          <div class="title">Housing Prices Map</div>
+          ZIP codes with higher two-bedroom fair market rents appear closer to the blue end of the scale, while lower-rent ZIP codes appear closer to magenta.
         </section>
         <section class="step" data-active-index="5">
           <div class="title">Same visualization multiple sections</div>
@@ -113,6 +113,8 @@
 
   <!-- sketches (renderers): UPDATE HERE FOR PROJECT -->
   <script src="js/sketches/viz/viz_title.js"></script>
+  <script src="js/sketches/viz/viz_yelp_reviews.js"></script>
+  <script src="js/sketches/viz/viz_housing_map.js"></script>
   <script src="js/sketches/viz/viz_progress_color.js"></script>
   <script src="js/sketches/viz/viz_scatter.js"></script>
   <script src="js/sketches/viz/viz_bar.js"></script>
