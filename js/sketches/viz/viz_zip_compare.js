@@ -1,55 +1,32 @@
 // Side-by-side ZIP comparison: housing prices vs restaurant ratings by year.
 (function () {
+    var SHARED_BINS = [
+        '#C8E4F5',
+        '#56B4E9',
+        '#0072B2',
+        '#F0E442',
+        '#E69F00',
+        '#CC79A7'
+    ];
+
     function quantizeT(t, bins) {
         var clamped = Math.max(0, Math.min(1, t));
         if (bins <= 1) return clamped;
         return Math.round(clamped * (bins - 1)) / (bins - 1);
     }
 
+    function sharedBinColor(p, t) {
+        var clamped = quantizeT(t, SHARED_BINS.length);
+        var index = Math.round(clamped * (SHARED_BINS.length - 1));
+        return p.color(SHARED_BINS[index]);
+    }
+
     function ratingColorRamp(p, t) {
-        var stops = [
-            { at: 0, color: p.color('#94CBEC') },
-            { at: 0.25, color: p.color('#0072B2') },
-            { at: 0.5, color: p.color('#F0E442') },
-            { at: 0.75, color: p.color('#E69F00') },
-            { at: 1, color: p.color('#7E2954') }
-        ];
-        var clamped = quantizeT(t, 6);
-
-        for (var i = 0; i < stops.length - 1; i++) {
-            var start = stops[i];
-            var end = stops[i + 1];
-            if (clamped >= start.at && clamped <= end.at) {
-                var localT = (clamped - start.at) / Math.max(0.0001, end.at - start.at);
-                return p.lerpColor(start.color, end.color, localT);
-            }
-        }
-
-        return stops[stops.length - 1].color;
+        return sharedBinColor(p, t);
     }
 
     function housingColorRamp(p, t) {
-        var stops = [
-            { at: 0, color: p.color('#C8E4F5') },
-            { at: 1 / 6, color: p.color('#94CBEC') },
-            { at: 2 / 6, color: p.color('#0072B2') },
-            { at: 3 / 6, color: p.color('#F0E442') },
-            { at: 4 / 6, color: p.color('#FFBB24') },
-            { at: 5 / 6, color: p.color('#E69F00') },
-            { at: 1, color: p.color('#7E2954') }
-        ];
-        var clamped = Math.max(0, Math.min(1, t));
-
-        for (var i = 0; i < stops.length - 1; i++) {
-            var start = stops[i];
-            var end = stops[i + 1];
-            if (clamped >= start.at && clamped <= end.at) {
-                var localT = (clamped - start.at) / Math.max(0.0001, end.at - start.at);
-                return p.lerpColor(start.color, end.color, localT);
-            }
-        }
-
-        return stops[stops.length - 1].color;
+        return sharedBinColor(p, t);
     }
 
     function textColorFor(p, colorValue) {
@@ -418,11 +395,6 @@
             var hoveredZip = hoveredFeature ? hoveredFeature.zip : null;
             var range = Math.max(0.0001, config.maxValue - config.minValue);
 
-            p.noFill();
-            p.stroke('#d7ddd9');
-            p.strokeWeight(1);
-            p.rect(panel.x, panel.y, panel.w, panel.h, 0);
-
             p.noStroke();
             p.fill('#111111');
             p.textAlign(p.CENTER, p.TOP);
@@ -438,8 +410,8 @@
                     ? config.rampFn(p, (metricValue - config.minValue) / range)
                     : p.color('#d8dde1');
                 var alpha = hoveredZip
-                    ? (hoveredZip === feature.zip ? 252 : (metric ? 90 : 58))
-                    : (metric ? 225 : 188);
+                    ? (hoveredZip === feature.zip ? 255 : (metric ? 105 : 64))
+                    : (metric ? 248 : 196);
 
                 p.fill(p.red(fillColor), p.green(fillColor), p.blue(fillColor), alpha);
                 p.stroke(hoveredZip === feature.zip ? '#111111' : (hoveredZip ? '#9aabb8' : '#3d6277'));
