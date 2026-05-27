@@ -389,10 +389,22 @@
             p.text(rangeLabelRight, legendX + legendW, legendY + 10);
         },
 
-        drawPanel: function (p, panel, config) {
+        drawPanel: function (p, manager, panel, config) {
             var projectedFeatures = projectFeatures(config.geoData, buildProjection(config.geoData.bounds, panel.mapX, panel.mapY, panel.mapW, panel.mapH));
-            var hoveredFeature = findHoveredFeature(p, projectedFeatures);
-            var hoveredZip = hoveredFeature ? hoveredFeature.zip : null;
+            var selectedZip = manager[config.selectionKey] || null;
+            var justPressed = p.mouseIsPressed && !manager.zipCompareMouseWasPressed;
+            var clickedInMap = justPressed &&
+                p.mouseX >= panel.mapX &&
+                p.mouseX <= panel.mapX + panel.mapW &&
+                p.mouseY >= panel.mapY &&
+                p.mouseY <= panel.mapY + panel.mapH;
+
+            if (clickedInMap) {
+                var clickedFeature = findHoveredFeature(p, projectedFeatures);
+                selectedZip = clickedFeature ? clickedFeature.zip : null;
+                manager[config.selectionKey] = selectedZip;
+            }
+
             var range = Math.max(0.0001, config.maxValue - config.minValue);
 
             p.noStroke();
@@ -409,21 +421,19 @@
                 var fillColor = metricValue !== null && metricValue !== undefined
                     ? config.rampFn(p, (metricValue - config.minValue) / range)
                     : p.color('#d8dde1');
-                var alpha = hoveredZip
-                    ? (hoveredZip === feature.zip ? 255 : (metric ? 105 : 64))
+                var alpha = selectedZip
+                    ? (selectedZip === feature.zip ? 255 : (metric ? 105 : 64))
                     : (metric ? 248 : 196);
 
                 p.fill(p.red(fillColor), p.green(fillColor), p.blue(fillColor), alpha);
-                p.stroke(hoveredZip === feature.zip ? '#111111' : (hoveredZip ? '#9aabb8' : '#3d6277'));
-                p.strokeWeight(hoveredZip === feature.zip ? 2.6 : 1);
+                p.stroke(selectedZip === feature.zip ? '#111111' : (selectedZip ? '#9aabb8' : '#3d6277'));
+                p.strokeWeight(selectedZip === feature.zip ? 2.6 : 1);
                 drawFeature(p, feature);
             });
 
             projectedFeatures.forEach(function (feature) {
-                var metric = config.values[feature.zip];
-                var metricValue = config.valueAccessor(metric);
                 var fontSize = feature.labelScale < 0.017 ? 7 : (feature.labelScale < 0.03 ? 8 : 10);
-                var showLabel = hoveredZip === feature.zip;
+                var showLabel = selectedZip === feature.zip;
 
                 if (!showLabel) return;
 
@@ -437,12 +447,12 @@
                 p.text(feature.zip, feature.labelX, feature.labelY);
             });
 
-            var hoveredMetric = hoveredZip ? config.values[hoveredZip] : null;
-            var headerText = hoveredZip ? 'ZIP ' + hoveredZip : config.defaultHeader;
-            var detailText = hoveredMetric ? config.hoverDetail(hoveredMetric) : config.defaultDetail;
+            var selectedMetric = selectedZip ? config.values[selectedZip] : null;
+            var headerText = selectedZip ? 'ZIP ' + selectedZip : config.defaultHeader;
+            var detailText = selectedMetric ? config.hoverDetail(selectedMetric) : config.defaultDetail;
             drawInfoBlock(p, panel.x + 20, panel.y + panel.h - 94, headerText, detailText, panel.w - 40);
 
-            return hoveredMetric;
+            return selectedMetric;
         },
 
         draw: function (p, manager) {
@@ -486,12 +496,13 @@
             };
 
             p.push();
-            this.drawPanel(p, leftPanel, {
+            this.drawPanel(p, manager, leftPanel, {
                 title: 'Rent Prices by Year',
                 geoData: geoData,
                 values: housingYear.zipValues,
                 minValue: housingData.minValue,
                 maxValue: housingData.maxValue,
+                selectionKey: 'zipCompareHousingSelectedZip',
                 rampFn: housingColorRamp,
                 valueAccessor: function (value) { return typeof value === 'number' ? value : null; },
                 defaultHeader: 'Philadelphia overall',
@@ -504,12 +515,13 @@
                 rangeLabelRight: 'high'
             });
 
-            this.drawPanel(p, rightPanel, {
+            this.drawPanel(p, manager, rightPanel, {
                 title: 'Restaurant Ratings by Year',
                 geoData: geoData,
                 values: yelpYear.zipValues,
                 minValue: yelpData.minValue,
                 maxValue: yelpData.maxValue,
+                selectionKey: 'zipCompareRatingSelectedZip',
                 rampFn: ratingColorRamp,
                 valueAccessor: function (value) { return value ? value.avgRating : null; },
                 defaultHeader: 'Philadelphia overall',
