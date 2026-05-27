@@ -23,26 +23,34 @@
                     return response.text();
                 })
                 .catch(function () { return ''; });
+            var housingGeoRequest = fetch('data/philadelphia_zctas.geojson')
+                .then(function (response) {
+                    if (!response.ok) return null;
+                    return response.json();
+                })
+                .catch(function () { return null; });
 
-            return Promise.all([yelpDataRequest, housingDataRequest])
+            return Promise.all([yelpDataRequest, housingDataRequest, housingGeoRequest])
                 .then(function (results) {
                     var yelpData = results[0];
                     var housingData = results[1];
+                    var housingGeo = results[2];
                     computeLayout(yelpData);
                     manager.yelpReviewData = window.VizYelpReviews.prepareData(yelpData);
                     manager.housingMapData = window.VizHousingMap.prepareData(housingData);
+                    manager.housingGeoData = window.VizHousingMap.prepareGeoData(housingGeo);
                     return manager.data;
                 })
                 .catch(function () {
                     computeLayout([]);
                     manager.yelpReviewData = window.VizYelpReviews.prepareData([]);
                     manager.housingMapData = window.VizHousingMap.prepareData('');
+                    manager.housingGeoData = window.VizHousingMap.prepareGeoData(null);
                     return manager.data;
                 });
         },
 
         draw: function (p, manager, ai, progress) {
-
             if (ai === 0 || ai === 1) {
                 window.VizTitle.draw(p, manager, ai, progress);
                 return;

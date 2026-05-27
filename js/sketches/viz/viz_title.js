@@ -12,6 +12,7 @@
             p.rect(cx - w / 2, cy - h / 2, w, h, 6);
             p.fill(0);
             p.textAlign(p.CENTER, p.CENTER);
+            p.textFont('Spectral');
             p.textSize(48);
             p.text(ai === 0 ? 'IMT 561' : 'Final Project', cx, cy);
             p.pop();

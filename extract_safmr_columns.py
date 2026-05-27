@@ -4,6 +4,7 @@ from pathlib import Path
 
 
 DATA_DIR = Path("data")
+SOURCE_DIR = DATA_DIR / "safmrs_all_counties"
 OUTPUT_DIR = DATA_DIR / "extracted_safmr_columns"
 MASTER_OUTPUT = DATA_DIR / "philadelphia_safmr_master.csv"
 ZIP_CODES = [
@@ -172,10 +173,12 @@ def build_master_file() -> None:
 def main() -> None:
     allowed_zips = {normalize_zip(zip_code) for zip_code in ZIP_CODES}
     csv_files = sorted(
-        path for path in DATA_DIR.glob("*.csv") if not path.name.endswith("_safmr_columns.csv")
+        path
+        for path in SOURCE_DIR.glob("*.csv")
+        if not path.name.endswith("_safmr_columns.csv") and path.name != MASTER_OUTPUT.name
     )
     if not csv_files:
-        print("No CSV files found in data.")
+        print("No CSV files found in source directory.")
         return
 
     for csv_path in csv_files:

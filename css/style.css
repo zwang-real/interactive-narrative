@@ -1,4 +1,8 @@
 
+body {
+  font-family: "Spectral", Georgia, serif;
+}
+
 #site-header {
   position: fixed;
   top: 0;
@@ -15,7 +19,7 @@
 }
 
 #site-title {
-  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Spectral", Georgia, serif;
   font-size: 18px;
   font-weight: 700;
   color: #111;
@@ -24,7 +28,7 @@
 }
 
 #site-course {
-  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Spectral", Georgia, serif;
   font-size: 13px;
   color: #888;
   white-space: nowrap;
@@ -107,14 +111,14 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
-  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Spectral", Georgia, serif;
   font-size: 16px;
   line-height: 1.65;
   color: #222;
 }
 
 #sections .title {
-  font-family: system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: "Spectral", Georgia, serif;
   font-size: 17px;
   font-weight: 700;
   margin-bottom: 6px;
@@ -161,6 +165,11 @@
   font-size: 15px;
   color: #555;
   line-height: 1.6;
+}
+
+.author-name,
+.author-bio {
+  font-family: "Spectral", Georgia, serif;
 }
 
 /* full-text layout: hide vis, center and expand text column */
