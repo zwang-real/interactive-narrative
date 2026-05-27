@@ -1,0 +1,23 @@
+{
+  "business_id": "iUZEGx29miZObLd6_lt7Vg",
+  "name": "Sabrina's Caf\u00e9",
+  "city": "Philadelphia",
+  "state": "PA",
+  "postal_code": "19130",
+  "latitude": 39.9604147854,
+  "longitude": -75.1686044902,
+  "stars": 4.0,
+  "review_count": 1721,
+  "is_open": 1,
+  "categories": "Breakfast & Brunch, Restaurants, Vegetarian, Cafes, American (New), Food, Diners, American (Traditional)",
+  "delivery": "True",
+  "takeout": "True",
+  "price_range": "2",
+  "has_parking": true,
+  "is_chain": false,
+  "first_review_date": "2007-11-19 16:36:02",
+  "last_review_date": "2022-01-19 04:00:16",
+  "observation_days": 5174,
+  "observation_years": 14.2,
+  "survived": true
+}
