@@ -1,13 +1,20 @@
 // Side-by-side ZIP comparison: housing prices vs restaurant ratings by year.
 (function () {
+    function quantizeT(t, bins) {
+        var clamped = Math.max(0, Math.min(1, t));
+        if (bins <= 1) return clamped;
+        return Math.round(clamped * (bins - 1)) / (bins - 1);
+    }
+
     function ratingColorRamp(p, t) {
         var stops = [
-            { at: 0, color: p.color('#d9e5ff') },
-            { at: 0.33, color: p.color('#9db6ff') },
-            { at: 0.66, color: p.color('#5a79f0') },
-            { at: 1, color: p.color('#2f3a96') }
+            { at: 0, color: p.color('#94CBEC') },
+            { at: 0.25, color: p.color('#0072B2') },
+            { at: 0.5, color: p.color('#F0E442') },
+            { at: 0.75, color: p.color('#E69F00') },
+            { at: 1, color: p.color('#7E2954') }
         ];
-        var clamped = Math.max(0, Math.min(1, t));
+        var clamped = quantizeT(t, 6);
 
         for (var i = 0; i < stops.length - 1; i++) {
             var start = stops[i];
@@ -210,6 +217,21 @@
         return value.toFixed(2) + ' avg';
     }
 
+    function drawInfoBlock(p, x, y, headerText, detailText, maxWidth) {
+        p.noStroke();
+        p.fill('#1e1b18');
+        p.textAlign(p.LEFT, p.TOP);
+        p.textFont('IBM Plex Mono');
+        p.textStyle(p.BOLD);
+        p.textSize(11);
+        p.text(headerText, x, y);
+
+        p.textStyle(p.NORMAL);
+        p.textSize(11);
+        p.fill('#4f4a45');
+        p.text(detailText, x, y + 20, maxWidth, 28);
+    }
+
     function buildSharedYears(housingData, yelpData) {
         var housingYears = housingData && housingData.years ? housingData.years : [];
         var yelpYears = yelpData && yelpData.years ? yelpData.years : [];
@@ -321,7 +343,7 @@
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
             var sliderW = Math.min(360, w * 0.55);
             var sliderX = left + w / 2 - sliderW / 2;
-            var sliderY = top + h - 26;
+            var sliderY = top + h - 10;
             var knobRadius = 10;
             var slider = { x: sliderX, y: sliderY, w: sliderW, progress: progress, knobRadius: knobRadius };
 
@@ -361,15 +383,15 @@
             p.text(String(maxYear), sliderX + sliderW, sliderY + 12);
         },
 
-        drawMiniLegend: function (p, panel, title, rangeLabelLeft, rangeLabelRight, rampFn) {
-            var legendX = panel.x + 20;
-            var legendY = panel.y + panel.h - 42;
-            var legendW = panel.w - 40;
+        drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn) {
+            var legendX = x;
+            var legendY = y;
+            var legendW = w;
             var steps = 60;
 
             p.fill(30);
             p.textFont('IBM Plex Mono');
-            p.textStyle(p.BOLD);
+            p.textStyle(p.NORMAL);
             p.textSize(11);
             p.textAlign(p.LEFT, p.BOTTOM);
             p.text(title, legendX, legendY - 4);
@@ -404,9 +426,9 @@
             p.noStroke();
             p.fill('#111111');
             p.textAlign(p.CENTER, p.TOP);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(18);
+            p.textSize(16);
             p.text(config.title, panel.x + panel.w / 2, panel.y + 14);
 
             projectedFeatures.forEach(function (feature) {
@@ -415,45 +437,38 @@
                 var fillColor = metricValue !== null && metricValue !== undefined
                     ? config.rampFn(p, (metricValue - config.minValue) / range)
                     : p.color('#d8dde1');
-                var alpha = hoveredZip === feature.zip ? 248 : (metric ? 225 : 188);
+                var alpha = hoveredZip
+                    ? (hoveredZip === feature.zip ? 252 : (metric ? 90 : 58))
+                    : (metric ? 225 : 188);
 
                 p.fill(p.red(fillColor), p.green(fillColor), p.blue(fillColor), alpha);
-                p.stroke(hoveredZip === feature.zip ? '#111111' : '#3d6277');
-                p.strokeWeight(hoveredZip === feature.zip ? 2 : 1);
+                p.stroke(hoveredZip === feature.zip ? '#111111' : (hoveredZip ? '#9aabb8' : '#3d6277'));
+                p.strokeWeight(hoveredZip === feature.zip ? 2.6 : 1);
                 drawFeature(p, feature);
             });
 
             projectedFeatures.forEach(function (feature) {
                 var metric = config.values[feature.zip];
                 var metricValue = config.valueAccessor(metric);
-                var fillColor = metricValue !== null && metricValue !== undefined
-                    ? config.rampFn(p, (metricValue - config.minValue) / range)
-                    : p.color('#d8dde1');
                 var fontSize = feature.labelScale < 0.017 ? 7 : (feature.labelScale < 0.03 ? 8 : 10);
+                var showLabel = hoveredZip === feature.zip;
 
-                p.noStroke();
-                p.fill(textColorFor(p, fillColor));
+                if (!showLabel) return;
+
+                p.stroke(255, 235);
+                p.strokeWeight(3);
+                p.fill('#111111');
                 p.textFont('IBM Plex Mono');
-                p.textStyle(hoveredZip === feature.zip ? p.BOLD : p.NORMAL);
+                p.textStyle(p.BOLD);
                 p.textAlign(p.CENTER, p.CENTER);
-                p.textSize(fontSize);
+                p.textSize(fontSize + 1);
                 p.text(feature.zip, feature.labelX, feature.labelY);
             });
 
             var hoveredMetric = hoveredZip ? config.values[hoveredZip] : null;
-            p.fill('#1e1b18');
-            p.textAlign(p.LEFT, p.TOP);
-            p.textFont('IBM Plex Mono');
-            p.textStyle(p.BOLD);
-            p.textSize(11);
-            p.text(hoveredZip ? 'ZIP ' + hoveredZip : config.defaultLabel, panel.x + 20, panel.y + panel.h - 88);
-
-            p.textStyle(p.NORMAL);
-            p.textSize(11);
-            p.fill('#4f4a45');
-            p.text(config.describe(hoveredMetric), panel.x + 20, panel.y + panel.h - 72, panel.w - 40, 30);
-
-            this.drawMiniLegend(p, panel, config.legendTitle, config.rangeLabelLeft, config.rangeLabelRight, config.rampFn);
+            var headerText = hoveredZip ? 'ZIP ' + hoveredZip : config.defaultHeader;
+            var detailText = hoveredMetric ? config.hoverDetail(hoveredMetric) : config.defaultDetail;
+            drawInfoBlock(p, panel.x + 20, panel.y + panel.h - 94, headerText, detailText, panel.w - 40);
 
             return hoveredMetric;
         },
@@ -476,16 +491,16 @@
             var h = (manager.height || 520) - 22;
             var gap = 16;
             var panelW = (w - gap) / 2;
-            var panelH = h - 92;
+            var panelH = h - 110;
             var leftPanel = {
                 x: left,
                 y: top,
                 w: panelW,
                 h: panelH,
                 mapX: left + 10,
-                mapY: top + 54,
+                mapY: top + 46,
                 mapW: panelW - 20,
-                mapH: panelH - 120
+                mapH: panelH - 92
             };
             var rightPanel = {
                 x: left + panelW + gap,
@@ -493,9 +508,9 @@
                 w: panelW,
                 h: panelH,
                 mapX: left + panelW + gap + 10,
-                mapY: top + 54,
+                mapY: top + 46,
                 mapW: panelW - 20,
-                mapH: panelH - 120
+                mapH: panelH - 92
             };
 
             p.push();
@@ -507,9 +522,10 @@
                 maxValue: housingData.maxValue,
                 rampFn: housingColorRamp,
                 valueAccessor: function (value) { return typeof value === 'number' ? value : null; },
-                defaultLabel: formatCurrency(housingYear.cityAverage || 0),
-                describe: function (metric) {
-                    return metric ? formatCurrency(metric) + ' average SAFMR' : 'Average SAFMR for the selected year.';
+                defaultHeader: 'Philadelphia overall',
+                defaultDetail: formatCurrency(housingYear.cityAverage || 0) + ' average SAFMR',
+                hoverDetail: function (metric) {
+                    return formatCurrency(metric) + ' average SAFMR';
                 },
                 legendTitle: 'Rent prices',
                 rangeLabelLeft: 'low',
@@ -524,16 +540,37 @@
                 maxValue: yelpData.maxValue,
                 rampFn: ratingColorRamp,
                 valueAccessor: function (value) { return value ? value.avgRating : null; },
-                defaultLabel: formatRating(yelpYear.cityAverage || 0),
-                describe: function (metric) {
-                    return metric
-                        ? (metric.avgRating.toFixed(2) + ' avg from ' + metric.reviewCount.toLocaleString() + ' reviews')
-                        : 'Average restaurant review rating for the selected year.';
+                defaultHeader: 'Philadelphia overall',
+                defaultDetail: yelpYear.cityAverage ? (yelpYear.cityAverage.toFixed(2) + ' average restaurant rating') : 'No ratings for this year',
+                hoverDetail: function (metric) {
+                    return metric.avgRating.toFixed(2) + ' average rating';
                 },
                 legendTitle: 'Restaurant ratings',
                 rangeLabelLeft: 'low',
                 rangeLabelRight: 'high'
             });
+
+            this.drawLegendBlock(
+                p,
+                leftPanel.x + 20,
+                leftPanel.y + leftPanel.h + 18,
+                leftPanel.w - 40,
+                'Rent prices',
+                'low',
+                'high',
+                housingColorRamp
+            );
+
+            this.drawLegendBlock(
+                p,
+                rightPanel.x + 20,
+                rightPanel.y + rightPanel.h + 18,
+                rightPanel.w - 40,
+                'Restaurant ratings',
+                'low',
+                'high',
+                ratingColorRamp
+            );
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);
             p.pop();
