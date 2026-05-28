@@ -278,3 +278,23 @@ body {
   stroke: #000;
   stroke-width: 4px;
 }
+
+#site-nav {
+  display: flex;
+  gap: 24px;
+  margin-left: 16px;
+}
+
+#site-nav a {
+  font-family: 'Spectral SC', monospace;
+  font-size: 12px;
+  color: #888;
+  text-decoration: none;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+#site-nav a:hover {
+  color: #1a1a18;
+}

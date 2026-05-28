@@ -14,6 +14,11 @@
 <body>
   <header id="site-header">
     <span id="site-title">The Stars Don't Save You</span>
+    <nav id="site-nav">
+      <a href="#part1">Part 1</a>
+      <a href="#part2">Part 2</a>
+      <a href="#part3">Part 3</a>
+    </nav>
     <span id="site-course">IMT 561 Data Visualization: Design and Development</span>
     <span id="debug-state"></span>
   </header>
@@ -61,7 +66,7 @@
       </section>
 
       <!-- Part 1 heading — Spectral SC, full-text -->
-      <section class="step part-title" data-active-index="1" data-layout="full-text">
+      <section id="part1" class="step part-title" data-active-index="1" data-layout="full-text">
         <div class="title">Part 1 · The City's Pulse</div>
         On a street corner in Philadelphia, two restaurants open the same year. One is independent, the other a chain. From the outside, they look equally matched. But zoom out to the level of the whole city, and a different picture emerges. Not all neighborhoods offer the same starting conditions. Some cluster with thriving independents. Others are quietly dominated by chains.
       </section>
@@ -79,7 +84,7 @@
         </section>
 
         <!-- Part 2 heading — Spectral SC, full-text transition section -->
-        <section class="step part-title" data-active-index="2" data-layout="full-text">
+        <section id="part2" class="step part-title" data-active-index="2" data-layout="full-text">
           <div class="title">Part 2 · What Determines Survival</div>
           Independent restaurants close at higher rates despite better ratings.
           So what actually separates the ones that stay? The answer is not in
@@ -105,6 +110,12 @@
 
         <div id="extra-space"></div>
 
+        <!-- Part 3 heading — Spectral SC, full-text -->
+        <section id="part3" class="step part-title" data-active-index="X" data-layout="full-text">
+          <div class="title">Part 3 · What If It Had Chosen Differently</div>
+          The data has shown us the patterns. Now the question becomes personal. Sabrina's Café earned real loyalty and then quietly disappeared. But what if it had made different choices? What if the outcome was not inevitable, but written into decisions that could have gone another way?
+        </section>
+
         <section class="step" data-active-index="6">
           <div class="title">Examples</div>
           There is two examples in this code. One is a grid of circles that changes color
@@ -113,27 +124,6 @@
           Make sure you read both source files to understand how they work.
         </section>
 
-        <section class="step" data-active-index="7">
-          <div class="title">Best of Luck in the Project!</div>
-          You are now ready to start building your interactive article. Good luck!
-        </section>
-
-        <section class="step" data-active-index="8" data-layout="full-text">
-          <div class="title">Full-text section</div>
-          Add <code>data-layout="full-text"</code> to a section to hide the visualization and
-          give the text the full width of the screen. Use this for introductions, transitions,
-          or any moment where the data should step aside and the writing takes center stage.<br /><br />
-          This is a good place for a pull quote, a key finding stated plainly, or a paragraph
-          that needs room to breathe without competing with a chart.
-        </section>
-
-        <section class="step" data-active-index="9" data-layout="full-viz">
-          <div class="title">Full-visualization section</div>
-          Add <code>data-layout="full-viz"</code> to a section to expand the visualization
-          to the full screen width. The text column disappears and the sketch fills the space.
-          Use this for a dramatic reveal, a dense chart that needs every pixel, or a
-          cinematic moment in your story.
-        </section>
 
         <section class="step author-section" data-active-index="10" data-layout="full-text">
           <div class="title">About the Authors</div>
