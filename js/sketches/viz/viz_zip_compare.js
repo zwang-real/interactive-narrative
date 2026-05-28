@@ -364,7 +364,7 @@
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
-            p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 30);
+            p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 24);
         },
 
         drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn) {
@@ -477,7 +477,7 @@
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 16;
             var w = (manager.width || 600) - 40;
-            var h = ((manager.height || 520) - 22) * 0.9;
+            var h = (manager.height || 520) - 22;
             var gap = 16;
             var panelW = (w - gap) / 2;
             var panelH = h - 110;
