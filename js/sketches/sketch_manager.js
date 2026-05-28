@@ -92,7 +92,7 @@ function startP5() {
 
                 // mirror transition on the active text step
                 var activeStep = document.querySelector('.step[data-active-index="' + (self.state.activeIndex || 0) + '"]');
-                if (activeStep) {
+                if (activeStep && !activeStep.dataset.layout) {
                     activeStep.style.transform = 'translateY(' + tx.toFixed(2) + 'px)';
                     activeStep.style.opacity = op.toFixed(3);
                 }

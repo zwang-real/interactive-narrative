@@ -99,6 +99,7 @@ body {
   top: 0px;
   z-index: 90;
   padding-bottom: 0;
+  will-change: width;
 }
 
 .step:last-child {
@@ -120,7 +121,7 @@ body {
   line-height: 1.65;
   color: #222;
   /* Smooth fade for all steps */
-  transition: opacity 0.5s ease, transform 0.5s ease;
+  transition: opacity 0.5s ease;
 }
 
 /* Default title style: Spectral bold (image titles) */
@@ -203,6 +204,7 @@ body {
 #graphic.layout-full-text #sections {
   width: min(70vw, 800px);
   display: block;
+  transition: none;
 }
 
 /* full-viz layout: keep sections in flow but invisible */
