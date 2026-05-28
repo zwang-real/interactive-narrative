@@ -534,6 +534,14 @@
                 rangeLabelRight: 'high'
             });
 
+            p.noStroke();
+            p.fill('#4f4a45');
+            p.textAlign(p.CENTER, p.TOP);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(11);
+            p.text('Click any ZIP code area to view its average rent or restaurant rating.', left + w / 2, top + 42);
+
             this.drawLegendBlock(
                 p,
                 leftPanel.x + 20,
@@ -555,14 +563,6 @@
                 'high',
                 ratingColorRamp
             );
-
-            p.noStroke();
-            p.fill('#4f4a45');
-            p.textAlign(p.CENTER, p.CENTER);
-            p.textFont('IBM Plex Mono');
-            p.textStyle(p.NORMAL);
-            p.textSize(11);
-            p.text('Click any ZIP code area to view its average rent or restaurant rating.', left + w / 2, top + h - 58);
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);
             p.pop();
