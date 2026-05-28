@@ -91,8 +91,9 @@ function startP5() {
                 p.canvas.style.opacity = op.toFixed(3);
 
                 // mirror transition on the active text step
+                var isFullText = !!(document.querySelector('#graphic.layout-full-text'));
                 var activeStep = document.querySelector('.step[data-active-index="' + (self.state.activeIndex || 0) + '"]');
-                if (activeStep && !activeStep.dataset.layout) {
+                if (activeStep && !isFullText) {
                     activeStep.style.transform = 'translateY(' + tx.toFixed(2) + 'px)';
                     activeStep.style.opacity = op.toFixed(3);
                 }
