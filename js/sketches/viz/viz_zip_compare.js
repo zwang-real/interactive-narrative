@@ -562,7 +562,7 @@
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
-            p.text('Click a ZIP area to view its average rent or restaurant rating.', left + w / 2, top + h - 58);
+            p.text('Click any ZIP code area to view its average rent or restaurant rating.', left + w / 2, top + h - 58);
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);
             p.pop();
