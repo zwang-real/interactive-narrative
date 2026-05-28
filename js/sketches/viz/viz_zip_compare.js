@@ -457,7 +457,7 @@
             var selectedMetric = selectedZip ? config.values[selectedZip] : null;
             var headerText = selectedZip ? 'ZIP ' + selectedZip : config.defaultHeader;
             var detailText = selectedMetric ? config.hoverDetail(selectedMetric) : config.defaultDetail;
-            drawInfoBlock(p, panel.x + 20, panel.y + panel.h - 94, headerText, detailText, panel.w - 40);
+            drawInfoBlock(p, panel.x + 20, panel.mapY + panel.mapH + 12, headerText, detailText, panel.w - 40);
 
             return selectedMetric;
         },
