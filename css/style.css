@@ -176,6 +176,7 @@ body {
 }
 .author-section .authors .author {
   text-align: center;
+  width: 300px;
 }
 .author-name {
   font-weight: 700;
@@ -192,6 +193,10 @@ body {
 .author-name,
 .author-bio {
   font-family: "Spectral", Georgia, serif;
+}
+
+#sections .step.author-section .title {
+  font-family: 'Spectral SC', Georgia, serif;
 }
 
 /* full-text layout: hide vis, center and expand text column */
