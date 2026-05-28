@@ -96,7 +96,7 @@
 
             p.noStroke();
             p.fill(20);
-            p.textFont('IBM Plex Mono');
+            p.textFont('Spectral');
             p.textStyle(p.BOLD);
             p.textSize(16);
             p.textAlign(p.CENTER, p.TOP);

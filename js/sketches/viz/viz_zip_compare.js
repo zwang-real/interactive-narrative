@@ -331,7 +331,7 @@
             progress = years.length > 1 ? index / (years.length - 1) : 1;
 
             p.textAlign(p.CENTER, p.CENTER);
-            p.textFont('IBM Plex Mono');
+            p.textFont('Spectral');
             p.textStyle(p.BOLD);
             p.textSize(13);
             p.fill(45);
@@ -410,7 +410,7 @@
             p.noStroke();
             p.fill('#111111');
             p.textAlign(p.CENTER, p.TOP);
-            p.textFont('IBM Plex Mono');
+            p.textFont('Spectral');
             p.textStyle(p.BOLD);
             p.textSize(16);
             p.text(config.title, panel.x + panel.w / 2, panel.y + 14);
@@ -555,6 +555,14 @@
                 'high',
                 ratingColorRamp
             );
+
+            p.noStroke();
+            p.fill('#4f4a45');
+            p.textAlign(p.CENTER, p.CENTER);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(11);
+            p.text('Click a ZIP area to view its average rent or restaurant rating.', left + w / 2, top + h - 58);
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);
             p.pop();
