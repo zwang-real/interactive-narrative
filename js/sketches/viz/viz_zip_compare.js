@@ -358,6 +358,13 @@
             p.text(String(minYear), sliderX, sliderY + 12);
             p.textAlign(p.RIGHT, p.TOP);
             p.text(String(maxYear), sliderX + sliderW, sliderY + 12);
+
+            p.fill('#4f4a45');
+            p.textAlign(p.CENTER, p.TOP);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(11);
+            p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 30);
         },
 
         drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn) {
