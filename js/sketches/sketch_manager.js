@@ -102,6 +102,21 @@ function startP5() {
                     dbg.textContent = 'activeIndex: ' + (self.state.activeIndex || 0) + '   progress: ' + pr.toFixed(2);
                 }
             };
+
+            // ── Mouse events ──────────────────────────────────────────────
+            p.mousePressed = function () {
+                var ai = self.state.activeIndex || 0;
+                if (ai === 3 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mousePressed) {
+                    window.VizSurvivalDashboard.mousePressed(p, self, p.mouseX, p.mouseY);
+                }
+            };
+
+            p.mouseMoved = function () {
+                var ai = self.state.activeIndex || 0;
+                if (ai === 3 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mouseMoved) {
+                    window.VizSurvivalDashboard.mouseMoved(p, self, p.mouseX, p.mouseY);
+                }
+            };
         };
 
         this.p5 = new p5(sketch);

@@ -1,0 +1,167 @@
+{
+  "delivery": [
+    {
+      "label": "With Delivery",
+      "survival_rate": 0.6891,
+      "count": 3827
+    },
+    {
+      "label": "No Delivery",
+      "survival_rate": 0.3357,
+      "count": 1725
+    }
+  ],
+  "takeout": [
+    {
+      "label": "With Takeout",
+      "survival_rate": 0.574,
+      "count": 5678
+    },
+    {
+      "label": "No Takeout",
+      "survival_rate": 0.4375,
+      "count": 416
+    }
+  ],
+  "price_range": [
+    {
+      "label": "$",
+      "survival_rate": 0.5179,
+      "count": 2628
+    },
+    {
+      "label": "$$",
+      "survival_rate": 0.5258,
+      "count": 2946
+    },
+    {
+      "label": "$$$",
+      "survival_rate": 0.392,
+      "count": 301
+    },
+    {
+      "label": "$$$$",
+      "survival_rate": 0.5476,
+      "count": 42
+    }
+  ],
+  "parking": [
+    {
+      "label": "With Parking",
+      "survival_rate": 0.5557,
+      "count": 4589
+    },
+    {
+      "label": "No Parking",
+      "survival_rate": 0.5279,
+      "count": 2436
+    }
+  ],
+  "cuisine": [
+    {
+      "label": "Caribbean",
+      "survival_rate": 0.7164,
+      "count": 67
+    },
+    {
+      "label": "Pizza",
+      "survival_rate": 0.6352,
+      "count": 562
+    },
+    {
+      "label": "Burgers",
+      "survival_rate": 0.6318,
+      "count": 201
+    },
+    {
+      "label": "Mexican",
+      "survival_rate": 0.6283,
+      "count": 304
+    },
+    {
+      "label": "Seafood",
+      "survival_rate": 0.6235,
+      "count": 170
+    },
+    {
+      "label": "Breakfast",
+      "survival_rate": 0.5736,
+      "count": 197
+    },
+    {
+      "label": "Thai",
+      "survival_rate": 0.5672,
+      "count": 67
+    },
+    {
+      "label": "Vietnamese",
+      "survival_rate": 0.5625,
+      "count": 112
+    },
+    {
+      "label": "Japanese",
+      "survival_rate": 0.5608,
+      "count": 189
+    },
+    {
+      "label": "Bars",
+      "survival_rate": 0.5458,
+      "count": 262
+    },
+    {
+      "label": "Sandwiches",
+      "survival_rate": 0.5432,
+      "count": 486
+    },
+    {
+      "label": "Other",
+      "survival_rate": 0.5344,
+      "count": 1804
+    },
+    {
+      "label": "Chinese",
+      "survival_rate": 0.5329,
+      "count": 471
+    },
+    {
+      "label": "Korean",
+      "survival_rate": 0.5325,
+      "count": 77
+    },
+    {
+      "label": "Italian",
+      "survival_rate": 0.5184,
+      "count": 488
+    },
+    {
+      "label": "American",
+      "survival_rate": 0.5036,
+      "count": 1106
+    },
+    {
+      "label": "Cafes",
+      "survival_rate": 0.5,
+      "count": 144
+    },
+    {
+      "label": "Sushi",
+      "survival_rate": 0.4857,
+      "count": 35
+    },
+    {
+      "label": "Indian",
+      "survival_rate": 0.4831,
+      "count": 118
+    },
+    {
+      "label": "Mediterranean",
+      "survival_rate": 0.4519,
+      "count": 104
+    },
+    {
+      "label": "French",
+      "survival_rate": 0.3137,
+      "count": 51
+    }
+  ]
+}
