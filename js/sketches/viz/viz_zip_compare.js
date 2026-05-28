@@ -470,7 +470,7 @@
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 16;
             var w = (manager.width || 600) - 40;
-            var h = (manager.height || 520) - 22;
+            var h = ((manager.height || 520) - 22) * 0.9;
             var gap = 16;
             var panelW = (w - gap) / 2;
             var panelH = h - 110;
