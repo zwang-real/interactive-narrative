@@ -3,49 +3,71 @@
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>IMT 561 Data Visualization: Design and Development</title>
+  <title>The Stars Don't Save You</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Spectral:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Spectral+SC:ital,wght@0,400;0,600;0,700;1,400&family=Spectral:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
 </head>
 
 <body>
   <header id="site-header">
-    <span id="site-title">Your Project Title</span>
+    <span id="site-title">The Stars Don't Save You</span>
     <span id="site-course">IMT 561 Data Visualization: Design and Development</span>
     <span id="debug-state"></span>
   </header>
   <div class="container">
     <div id='graphic'>
       <div id='sections'>
-        <section class="step" data-active-index="0">
+
+        <!-- Article opening — Spectral SC title -->
+        <section class="step article-title" data-active-index="0">
           <div class="title">IMT 561 Final Project</div>
           Here is a template to work on your final project.<br /><br />
           Your mission is to create an <b>interactive article using P5.js</b>.
         </section>
+
+        <!-- Image title — Spectral bold (default) -->
         <section class="step" data-active-index="1">
           <div class="title">Sections</div>
           Note that each section in index.html corresponds to a section in the
           scrolling article. You can add or remove sections as needed.
         </section>
+
+        <!-- Image title — Spectral bold (default) -->
         <section class="step" data-active-index="2">
           <div class="title">Reviews and Ratings</div>
           Each circle is a Philadelphia restaurant. The x-axis shows review count, the y-axis shows rating, and larger circles indicate more reviews. Dotted lines mark the mean review count and mean rating.
         </section>
+
+        <!-- Part 2 heading — Spectral SC, full-text transition section -->
+        <section class="step part-title" data-active-index="2" data-layout="full-text">
+          <div class="title">Part 2 · What Determines Survival</div>
+          Independent restaurants close at higher rates despite better ratings.
+          So what actually separates the ones that stay? The answer is not in
+          the reviews. It is in the choices businesses make before a single
+          customer walks through the door.
+        </section>
+
+        <!-- Image title — Spectral bold (default) -->
         <section class="step" data-active-index="3">
           <div class="title">Delivery, Price, Location — Does Any of It Help?</div>
-          Click through the variables on the left to explore how different business
-          choices correlate with survival rate across Philadelphia restaurants.
+          Among Philadelphia restaurants, offering delivery is associated with
+          a survival rate of 68.9%, compared to 33.6% for those without.
+          Price tier, parking, and cuisine type each tell a different part of
+          the story. Click through the variables on the left to see which
+          choices move the needle.
         </section>
+
         <section class="step" data-active-index="5">
           <div class="title">Same visualization multiple sections</div>
           Some visualizations may be relevant to multiple sections. You can reuse the same visualization
           across different sections to reinforce key points. Or build on the previous visualization to just add on.
         </section>
-        <div id="extra-space">
-        </div>
+
+        <div id="extra-space"></div>
+
         <section class="step" data-active-index="6">
           <div class="title">Examples</div>
           There is two examples in this code. One is a grid of circles that changes color
@@ -53,10 +75,12 @@
           shows random data points. You can modify or replace these examples with your own visualizations.
           Make sure you read both source files to understand how they work.
         </section>
+
         <section class="step" data-active-index="7">
           <div class="title">Best of Luck in the Project!</div>
           You are now ready to start building your interactive article. Good luck!
         </section>
+
         <section class="step" data-active-index="8" data-layout="full-text">
           <div class="title">Full-text section</div>
           Add <code>data-layout="full-text"</code> to a section to hide the visualization and
@@ -65,6 +89,7 @@
           This is a good place for a pull quote, a key finding stated plainly, or a paragraph
           that needs room to breathe without competing with a chart.
         </section>
+
         <section class="step" data-active-index="9" data-layout="full-viz">
           <div class="title">Full-visualization section</div>
           Add <code>data-layout="full-viz"</code> to a section to expand the visualization
@@ -72,13 +97,14 @@
           Use this for a dramatic reveal, a dense chart that needs every pixel, or a
           cinematic moment in your story.
         </section>
+
         <section class="step author-section" data-active-index="10" data-layout="full-text">
           <div class="title">About the Authors</div>
           <div class="authors">
             <div class="author">
               <div class="author-name">Susan Zhang</div>
               <div class="author-bio">I'm a first year student in MSIM program, with specializations in AI and Data Science. My research interests currently are Human-AI interaction and how to use AI to in fields like healthcare.</div>
-              <div class="author-bio">I did the data extraction and cleaning for the project. I also did the review vs rating scatterplot, the </div>
+              <div class="author-bio">I did the data extraction and cleaning for the project. I also did the review vs rating scatterplot, the survival dashboard, and the business simulator.</div>
             </div>
             <div class="author">
               <div class="author-name">Author Two</div>
@@ -86,14 +112,12 @@
             </div>
           </div>
         </section>
+
       </div>
-      <div id='vis' class='vis-hidden'>
-      </div>
-      <div id="extra-space">
-      </div>
+      <div id='vis' class='vis-hidden'></div>
+      <div id="extra-space"></div>
     </div>
   </div>
-
 
   <!-- p5.js (using CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
@@ -119,9 +143,8 @@
   <script src="js/sketches/viz/viz_progress_color.js"></script>
   <script src="js/sketches/viz/viz_scatter.js"></script>
   <script src="js/sketches/viz/viz_bar.js"></script>
-  <script src="js/sketches/sketch_renderer.js"></script>
   <script src="js/sketches/viz/viz_survival_dashboard.js"></script>
-
+  <script src="js/sketches/sketch_renderer.js"></script>
 
 </body>
 
