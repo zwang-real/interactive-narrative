@@ -11,7 +11,7 @@
 //   5  Image 3 Dashboard VizSurvivalDashboard
 //   6  Image 4 Housing  VizHousingMap
 //   7  Part 3 title     full-text, no viz
-//   8  Image 5 Report   (not built yet — placeholder)
+//   8  Image 5 Report   VizReportCard
 //   9  Authors          full-text, no viz
 (function () {
     window.Renderer = {
@@ -80,6 +80,11 @@
             // Image 4 — Housing / rent map
             if (ai === 6) {
                 window.VizZipCompare.draw(p, manager, ai, progress);
+                return;
+            }
+            // Image 5 — The Report Card (Part 3, interactive)
+            if (ai === 8) {
+                window.VizReportCard.draw(p, manager, ai, progress);
                 return;
             }
             // All other indices are full-text sections (Intro, Part titles,

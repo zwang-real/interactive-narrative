@@ -104,6 +104,9 @@ function startP5() {
                 if (ai === 5 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mousePressed) {
                     window.VizSurvivalDashboard.mousePressed(p, self, p.mouseX, p.mouseY);
                 }
+                if (ai === 8 && window.VizReportCard && window.VizReportCard.mousePressed) {
+                    window.VizReportCard.mousePressed(p, self, p.mouseX, p.mouseY);
+                }
             };
             p.mouseMoved = function () {
                 var ai = self.state.activeIndex || 0;
