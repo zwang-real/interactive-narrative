@@ -1,0 +1,56 @@
+/* ── Standalone opening animation ───────────────────────────────────────── */
+
+/* Tall spacer at the top of the page that provides scroll distance.
+   2.4 screens tall: enough room for stars to die + title to appear + fade. */
+#opening-spacer {
+  height: 240vh;
+  width: 100%;
+}
+
+/* Fixed full-screen overlay holding the canvas + title. */
+#opening-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;     /* never block scrolling */
+  transition: opacity 0.3s ease;
+}
+
+#opening-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Title centered over the canvas */
+#opening-title {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'Spectral SC', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(28px, 5vw, 64px);
+  color: #F5F0E8;
+  text-align: center;
+  white-space: nowrap;
+  opacity: 0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 30px rgba(13,27,42,0.8);
+}
+
+/* Scroll hint near the bottom */
+#opening-hint {
+  position: absolute;
+  bottom: 8vh;
+  left: 50%;
+  transform: translateX(-50%);
+  font-family: 'IBM Plex Mono', monospace;
+  font-size: 13px;
+  color: #F5F0E8;
+  opacity: 0;
+  letter-spacing: 0.1em;
+}

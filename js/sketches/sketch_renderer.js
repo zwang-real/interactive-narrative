@@ -55,6 +55,7 @@
                     manager.housingGeoData         = window.VizHousingMap.prepareGeoData(housingGeo);
                     manager.yelpZipYearData        = window.VizZipCompare.prepareYelpData(yelpYearSummary);
                     manager.survivalDashboardData  = window.VizSurvivalDashboard.prepareData(survivalData);
+                    manager.openingData = window.VizOpening.prepareData(yelpData);
                     return manager.data;
                 })
                 .catch(function () {
@@ -69,7 +70,12 @@
         },
 
         draw: function (p, manager, ai, progress) {
-            if (ai === 0 || ai === 1) {
+            if (ai === 0) {
+                window.VizOpening.draw(p, manager);
+                return;
+            }
+
+            if (ai === 1) {
                 window.VizTitle.draw(p, manager, ai, progress);
                 return;
             }

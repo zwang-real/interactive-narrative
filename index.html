@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Spectral+SC:ital,wght@0,400;0,600;0,700;1,400&family=Spectral:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
+  <link rel="stylesheet" type="text/css" href="css/opening.css" />
 </head>
 
 <body>
@@ -26,30 +27,32 @@
     <div id='graphic'>
       <div id='sections'>
 
-        <!-- Cover page — Spectral SC title, centered layout -->
-        <section class="step article-title" data-active-index="0" data-layout="full-text">
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 3rem 1rem;">
+      <!-- Cover info block — appears right after the opening animation fades out -->
+      <section class="step" data-active-index="1" data-layout="full-text">
+        <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; min-height: 70vh;">
 
-            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 1.5rem;">
-            Philadelphia · Yelp Open Dataset · 2022
-            </div>
-
-            <div class="title" style="font-size: 42px; line-height: 1.15; margin-bottom: 1.25rem; max-width: 560px;">
-            The Stars Don't Save You
-            </div>
-
-            <div style="width: 40px; height: 2px; background: #C94E1E; margin: 0 auto 1.5rem; border-radius: 1px;"></div>
-
-            <div style="font-family: 'Spectral', Georgia, serif; font-size: 16px; font-weight: 400; color: #555; line-height: 1.65; max-width: 480px; margin-bottom: 2.5rem;">
-            How independent restaurants outlast chains in ratings but not in survival, and what the data reveals about who gets to stay.
-            </div>
-
-          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #888; letter-spacing: 0.06em;">
+      <!-- Left: subtitle + authors -->
+        <div style="flex: 1; min-width: 280px; max-width: 480px;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 1.5rem;">
+          Philadelphia · Yelp Open Dataset · 2022
+        </div>
+        <div style="width: 40px; height: 2px; background: #C94E1E; margin-bottom: 1.5rem; border-radius: 1px;"></div>
+        <div style="font-family: 'Spectral', Georgia, serif; font-size: 20px; font-weight: 400; color: #333; line-height: 1.6; margin-bottom: 2rem;">
+          How independent restaurants outlast chains in ratings but not in survival, and what the data reveals about who gets to stay.
+        </div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #888; letter-spacing: 0.04em;">
           By <strong style="color: #1a1a18;">Susan Zhang</strong> &amp; <strong style="color: #1a1a18;">Zijing Wang</strong>
-          </div>
+        </div>
+        </div>
 
-          </div>
-        </section>
+      <!-- Right: restaurant photo -->
+      <div style="flex: 1; min-width: 280px; max-width: 460px;">
+        <img src="img/restaurant.jpg" alt="A neighborhood restaurant"
+           style="width: 100%; height: auto; border-radius: 8px; display: block;" />
+      </div>
+
+      </div>
+      </section>
 
       <!-- Intro — opening narrative, full-text -->
       <section class="step part-title" data-active-index="1" data-layout="full-text">
@@ -172,6 +175,7 @@
   <script src="js/sketches/viz/viz_bar.js"></script>
   <script src="js/sketches/viz/viz_survival_dashboard.js"></script>
   <script src="js/sketches/sketch_renderer.js"></script>
+  <script src="js/sketches/viz/opening_standalone.js"></script>
 
 </body>
 
