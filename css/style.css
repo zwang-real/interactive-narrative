@@ -141,7 +141,7 @@ body {
 }
 
 #extra-space {
-  height: 80vh;
+  height: 150vh;
 }
 
 #vis {
@@ -301,3 +301,9 @@ body {
   color: #1a1a18;
 }
 
+/* Lock full-text section width so height never changes — kills the author flicker */
+#graphic .step[data-layout="full-text"] {
+  width: min(70vw, 800px) !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}

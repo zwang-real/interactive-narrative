@@ -51,6 +51,7 @@
                     manager.housingGeoData        = window.VizHousingMap.prepareGeoData(housingGeo);
                     manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(yelpYearSummary);
                     manager.survivalDashboardData = window.VizSurvivalDashboard.prepareData(survivalData);
+                    manager.yelpHeatmapData = window.VizYelpHeatmap.prepareData(yelpData);
                     return manager.data;
                 })
                 .catch(function () {
@@ -60,14 +61,15 @@
                     manager.housingGeoData        = window.VizHousingMap.prepareGeoData(null);
                     manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(null);
                     manager.survivalDashboardData = window.VizSurvivalDashboard.prepareData(null);
+                    manager.yelpHeatmapData = window.VizYelpHeatmap.prepareData([]);
                     return manager.data;
                 });
         },
 
         draw: function (p, manager, ai, progress) {
-            // Image 2 — Scatter: reviews vs ratings
+            // Image 2 — Heatmap: reviews vs ratings, open vs closed
             if (ai === 3) {
-                window.VizYelpReviews.draw(p, manager, ai, progress);
+                window.VizYelpHeatmap.draw(p, manager);
                 return;
             }
             // Image 3 — Survival dashboard (interactive)
@@ -77,7 +79,7 @@
             }
             // Image 4 — Housing / rent map
             if (ai === 6) {
-                window.VizHousingMap.draw(p, manager, ai, progress);
+                window.VizZipCompare.draw(p, manager, ai, progress);
                 return;
             }
             // All other indices are full-text sections (Intro, Part titles,

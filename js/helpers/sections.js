@@ -100,11 +100,12 @@
                             var layout = sc.steps[index] && sc.steps[index].dataset && sc.steps[index].dataset.layout;
                             if (layout) graphic.classList.add('layout-' + layout);
                             requestAnimationFrame(function () {
-                                if (window.__sketchAPI && window.__sketchAPI.p5 &&
+                                var isFT = !!document.querySelector('#graphic.layout-full-text');
+                                if (!isFT && window.__sketchAPI && window.__sketchAPI.p5 &&
                                     typeof window.__sketchAPI.p5.windowResized === 'function') {
                                     window.__sketchAPI.p5.windowResized();
                                 }
-                            });
+                        });
                         }
 
                         // Determine if the active step defines a custom active-index
