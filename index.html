@@ -16,9 +16,9 @@
   <header id="site-header">
     <span id="site-title">The Stars Don't Save You</span>
     <nav id="site-nav">
-      <a href="#part1">Part 1</a>
-      <a href="#part2">Part 2</a>
-      <a href="#part3">Part 3</a>
+      <a href="#part1">The City's Pulse</a>
+      <a href="#part2">What Determines Survival</a>
+      <a href="#part3">It Did Everything Right</a>
     </nav>
     <span id="site-course">IMT 561 Data Visualization: Design and Development</span>
     <span id="debug-state"></span>
@@ -53,66 +53,109 @@
 
   </div>
 </section>
+
         <!-- 0 · Intro — full-text -->
         <section class="step part-title" data-active-index="0" data-layout="full-text">
           <div class="title">Introduction</div>
           <p>
-            On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It had a four-star rating, nearly nine hundred reviews from people who called it a neighborhood favorite. By 2018, it was gone. No announcement, no explanation, just a listing that stopped updating.
+            On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It held a four-star rating and nearly nine hundred reviews from people who called it a neighborhood favorite. By 2018 it was gone. No announcement, no explanation, just a listing that stopped updating.
           </p>
           <p>
-            This is not a story about one restaurant. It is a story about a pattern: one that repeats itself across thousands of independent businesses in cities like Philadelphia, hiding in plain sight inside the data.
-          </p>
-          <p>
-            Using Yelp's open dataset of over seven thousand food and restaurant businesses in Philadelphia, we trace the survival patterns of independent shops against chain restaurants, and find that the gap between them is structural, persistent, and largely invisible to the people living inside it.
+            This is not a story about one restaurant. It is a story about a pattern, one that repeats across thousands of independent businesses in cities like Philadelphia and hides in plain sight inside the data. Using Yelp's open dataset of more than seven thousand food and restaurant businesses in Philadelphia, we trace how independent shops survive compared to chains. We find a gap that is structural, persistent, and largely invisible to the people living inside it. The most counterintuitive part is this: independent restaurants do not disappear because they are worse.
           </p>
         </section>
 
         <!-- 1 · Part 1 title — full-text -->
         <section id="part1" class="step part-title" data-active-index="1" data-layout="full-text">
-          <div class="title">Part 1 · The City's Pulse</div>
-          On a street corner in Philadelphia, two restaurants open the same year. One is independent, the other a chain. From the outside, they look equally matched. But zoom out to the level of the whole city, and a different picture emerges. Not all neighborhoods offer the same starting conditions. Some cluster with thriving independents. Others are quietly dominated by chains.
+          <div class="title">The City's Pulse</div>
+          Before we judge any single restaurant, it helps to pull the camera back. A city is never an even canvas. If independent shops and chains start on different ground from the very first day, then the question of who survives may already be partly decided before a single door opens.
         </section>
 
-        <!-- 2 · Image 1 Map (not built yet) -->
+        <!-- 2a · Where They Stand — paragraph 1 -->
         <section class="step" data-active-index="2">
-          <div class="title">Where They Stand — Rating & Survival Across the City</div>
-          This map visualizes the geographic distribution of independent and chain restaurants across Philadelphia, encoding survival rate and average rating through color and shade. It sets the stage by showing that location alone creates unequal starting conditions.
+          <div class="title">Where They Stand</div>
+          <p>
+            This map plots every restaurant in our Philadelphia dataset, with color separating independents from chains and shading showing survival. At a glance it looks like scattered dots, but once you notice how the colors cluster, the structure of the city begins to surface.
+          </p>
         </section>
 
-        <!-- 3 · Image 2 Scatter (VizYelpReviews) -->
+        <!-- 2b · Where They Stand — paragraph 2 (same viz, index 2) -->
+        <section class="step" data-active-index="2">
+          <p>
+            Independent restaurants concentrate heavily in a handful of neighborhoods, while chains spread more evenly across the whole map. Some areas are almost entirely made of thriving independents, others are quietly dominated by chains. Location itself is a form of inequality. Where you open says something about how long you are likely to last. But place is only where the story begins.
+          </p>
+        </section>
+
+        <!-- 3a · More Reviews, Still Closing — paragraph 1 -->
         <section class="step" data-active-index="3">
-          <div class="title">More Reviews, Still Closing — Rating vs. Review Count</div>
-          Each circle is a Philadelphia restaurant. The x-axis shows review count, the y-axis shows rating, and larger circles indicate more reviews. Dotted lines mark the mean review count and mean rating.
+          <div class="title">More Reviews, Still Closing</div>
+          <p>
+            If location shapes the starting line, what about quality? Intuition says the better-rated and more-loved a restaurant is, the longer it should last. This heatmap bins every restaurant by review count and rating, and splits them into two panels: the ones still open, and the ones that closed. If popularity protected restaurants, the closed panel should be nearly empty in the high-rating, high-review cells.
+          </p>
+        </section>
+
+        <!-- 3b · More Reviews, Still Closing — paragraph 2 (same viz, index 3) -->
+        <section class="step" data-active-index="3">
+          <p>
+            It is not. Independent restaurants average 3.67 stars, well above the 2.45 average for chains, yet even the well-rated, heavily reviewed independents close at higher rates than comparable chains. Across the whole city, independents survive at 53.3 percent against 70.4 percent for chains, a gap of roughly seventeen points. Customer love does not convert into survival. The question is no longer how good a restaurant is. It is what actually decides who stays.
+          </p>
         </section>
 
         <!-- 4 · Part 2 title — full-text -->
         <section id="part2" class="step part-title" data-active-index="4" data-layout="full-text">
-          <div class="title">Part 2 · What Determines Survival</div>
-          Independent restaurants close at higher rates despite better ratings. So what actually separates the ones that stay? The answer is not in the reviews. It is in the choices businesses make before a single customer walks through the door.
+          <div class="title">What Determines Survival</div>
+          The answer is not in the reviews. It lives in the choices a business makes before a single customer walks through the door: whether it offers delivery, how it prices itself, what kind of neighborhood it sits in. These decisions are quiet and easy to overlook, yet they shape the ending.
         </section>
 
-        <!-- 5 · Image 3 Dashboard (VizSurvivalDashboard, interactive) -->
+        <!-- 5a · Does Any of It Help? — paragraph 1 -->
         <section class="step" data-active-index="5">
-          <div class="title">Delivery, Price, Location — Does Any of It Help?</div>
-          Among Philadelphia restaurants, offering delivery is associated with a survival rate of 68.9%, compared to 33.6% for those without. Price tier, parking, and cuisine type each tell a different part of the story. Click through the variables on the left to see which choices move the needle.
+          <div class="title">Does Any of It Help?</div>
+          <p>
+            This is an interactive dashboard. Click through the variables on the left, delivery, price, cuisine, parking, and the survival rate on the right shifts with your choice. We invite you to find out for yourself which decisions actually move the odds and which barely matter at all.
+          </p>
         </section>
 
-        <!-- 6 · Image 4 Housing map (VizHousingMap) -->
+        <!-- 5b · Does Any of It Help? — paragraph 2 (same viz, index 5) -->
+        <section class="step" data-active-index="5">
+          <p>
+            The strongest signal by far is delivery. Restaurants that offer it survive at 68.9 percent, compared to just 33.6 percent for those that do not, a gap of nearly thirty-five points. Cuisine matters too, ranging from Caribbean at 71.6 percent down to French at 31.4 percent. Parking and takeout, by contrast, make almost no difference. What separates survivors is less about how good the food is and more about structural choices that decide how many customers a business can reach.
+          </p>
+        </section>
+
+        <!-- 6a · Place Matters — paragraph 1 -->
         <section class="step" data-active-index="6">
-          <div class="title">Place Matters — Rent and Restaurant Survival</div>
-          This map places neighborhood rent levels side by side with restaurant survival rates. Higher-rent, faster-growing areas tend to be harder places for independent restaurants to survive. Location is not just a coordinate; it is a recurring cost.
+          <div class="title">Place Matters</div>
+          <p>
+            If operational choices matter, what about the economic ground a restaurant stands on? These two maps place neighborhood rent on the left beside restaurant ratings on the right, year by year. We want to see whether survival is shaped not only by the restaurant itself but by the cost of the land beneath it.
+          </p>
+        </section>
+
+        <!-- 6b · Place Matters — paragraph 2 (same viz, index 6) -->
+        <section class="step" data-active-index="6">
+          <p>
+            The pattern is uneven. Higher-rent and faster-rising neighborhoods tend to be harder places for independent restaurants to hold on. The same well-reviewed shop that might survive in an affordable area can struggle in a high-rent one. Location is not just a coordinate, it is a recurring bill. Structural disadvantage stacks, layer by layer, on the independents that were already the most exposed.
+          </p>
         </section>
 
         <!-- 7 · Part 3 title — full-text -->
         <section id="part3" class="step part-title" data-active-index="7" data-layout="full-text">
-          <div class="title">Part 3 · It Did Everything Right</div>
-          The data has shown us the patterns. Now, carrying those patterns with us, we return to the restaurant from the beginning and check its report card, line by line.
+          <div class="title">It Did Everything Right</div>
+          The data has shown us the patterns. Now, carrying those patterns with us, we return to the restaurant we started with and grade its report card, line by line. You decide whether each measure beats the city.
         </section>
 
-        <!-- 8 · Image 5 Report card (not built yet) -->
+        <!-- 8a · The Report Card — paragraph 1 -->
         <section class="step" data-active-index="8">
           <div class="title">The Report Card</div>
-          Garces Trading Company offered delivery, held a four-star rating, drew nearly nine hundred reviews, had parking, and sat at a mid-range price point. By every measure we have seen, it stood on the side of the survivors. It should have survived. It did not.
+          <p>
+            Garces Trading Company offered delivery when only 54.5 percent of restaurants did. It held four stars against a city average of 3.58. It drew roughly nine hundred reviews when the median restaurant had thirty-three. It had parking, like 65.3 percent of the city, and sat at the most common price tier. Grade it yourself, see if every box turns green.
+          </p>
+        </section>
+
+        <!-- 8b · The Report Card — paragraph 2 (same viz, index 8) -->
+        <section class="step" data-active-index="8">
+          <p>
+            By every measure we have seen, it stood on the side of the survivors. And yet it closed in 2018. The data can tell us the truth at the level of the group, that independents are systematically disadvantaged in ways that have nothing to do with how good the food is. But the fate of a single restaurant still answers to forces the data cannot see: a lease that ends, a decision made upstairs, a shock no one planned for. Structural inequality is real. It is just not the whole story. The stars do not save you. They only let us see that the game was uneven from the start.
+          </p>
         </section>
 
         <!-- 9 · Authors — full-text -->
