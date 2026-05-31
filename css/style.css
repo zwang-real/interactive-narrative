@@ -25,7 +25,7 @@ body {
 #site-title {
   /* Article title in header uses Spectral SC */
   font-family: "Spectral SC", Georgia, serif;
-  font-size: 18px;
+  font-size: clamp(18px, 1.2vw + 10px, 24px);
   font-weight: 700;
   color: #111;
   white-space: nowrap;
@@ -34,7 +34,7 @@ body {
 
 #site-course {
   font-family: "Spectral", Georgia, serif;
-  font-size: 13px;
+  font-size: clamp(11px, 0.4vw + 7px, 14px);
   color: #888;
   white-space: nowrap;
 }
@@ -117,7 +117,8 @@ body {
   flex-direction: column;
   justify-content: center;
   font-family: "Spectral", Georgia, serif;
-  font-size: 16px;
+  /* Body text scales with screen: comfortable on a laptop, large on a projector */
+  font-size: clamp(15px, 0.4vw + 11px, 21px);
   line-height: 1.65;
   color: #222;
 }
@@ -125,7 +126,7 @@ body {
 /* Default title style: Spectral bold (image titles) */
 #sections .title {
   font-family: "Spectral", Georgia, serif;
-  font-size: 17px;
+  font-size: clamp(17px, 1vw + 11px, 28px);
   font-weight: 700;
   margin-bottom: 6px;
   color: #111;
@@ -136,7 +137,7 @@ body {
 #sections .step.part-title .title,
 #sections .step.article-title .title {
   font-family: "Spectral SC", Georgia, serif;
-  font-size: 20px;
+  font-size: clamp(19px, 0.9vw + 12px, 30px);
   font-weight: 700;
 }
 
@@ -177,12 +178,12 @@ body {
 }
 .author-name {
   font-weight: 700;
-  font-size: 16px;
+  font-size: clamp(16px, 0.7vw + 11px, 22px);
   color: #111;
   margin-bottom: 4px;
 }
 .author-bio {
-  font-size: 15px;
+  font-size: clamp(15px, 0.6vw + 10px, 20px);
   color: #555;
   line-height: 1.6;
 }
@@ -289,7 +290,7 @@ body {
 
 #site-nav a {
   font-family: 'Spectral SC', monospace;
-  font-size: 12px;
+  font-size: clamp(12px, 0.6vw + 7px, 16px);
   color: #888;
   text-decoration: none;
   letter-spacing: 0.04em;
