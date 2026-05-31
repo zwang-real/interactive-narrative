@@ -116,6 +116,14 @@
         // overall fade of the whole overlay near the very end
         if (overlay) overlay.style.opacity = String(1 - clamp01((progress - 0.92) / 0.08));
 
+        // fade in the cover-info block as the sky whitens
+        var cover = document.getElementById('cover-info');
+        if (cover) {
+            var coverFade = clamp01((progress - 0.8) / 0.18);
+            cover.style.opacity = String(coverFade);
+            cover.style.transition = 'none';
+        }
+
         if (!dataReady || !dots.length) return;
 
         var t = performance.now();

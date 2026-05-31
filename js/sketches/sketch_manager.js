@@ -2,11 +2,8 @@
 
 function startP5() {
 
-    var localRenderer;
-    // localRenderer = window.TemplateRenderer;
-    localRenderer = window.Renderer;
+    var localRenderer = window.Renderer;
 
-    // --- Sketch manager ----------------------------------------------------
     function getVisSize() {
         var isMobile = window.innerWidth <= 700;
         var w, h, margin;
@@ -36,13 +33,9 @@ function startP5() {
         this.canvasWidth = this.width + this.margin.left + this.margin.right;
         this.canvasHeight = this.height + this.margin.top + this.margin.bottom;
 
-        // drawing state
         this.state = { activeIndex: 0, progress: 0 };
-
-        // data will be attached by localRenderer.setData(manager, data)
         this.data = [];
 
-        // create the p5 instance bound to this manager
         var self = this;
         var sketch = function (p) {
             p.setup = function () {
@@ -69,52 +62,52 @@ function startP5() {
                 p.background(255);
                 self.draw(p);
 
-                // scroll in/out transition using progress
                 var pr = self.state.progress || 0;
+                var activeIdx = self.state.activeIndex || 0;
                 var ease = 0.05;
                 var travel = 20;
                 var tx, op;
                 function smoothstep(t) { return t * t * (3 - 2 * t); }
                 if (pr < ease) {
-                    var t = smoothstep(pr / ease);
-                    tx = (1 - t) * travel;
-                    op = t;
+                    var t1 = smoothstep(pr / ease);
+                    tx = (1 - t1) * travel; op = t1;
                 } else if (pr > 1 - ease) {
-                    var t = smoothstep((pr - (1 - ease)) / ease);
-                    tx = -t * travel;
-                    op = 1 - t;
+                    var t2 = smoothstep((pr - (1 - ease)) / ease);
+                    tx = -t2 * travel; op = 1 - t2;
                 } else {
-                    tx = 0;
-                    op = 1;
+                    tx = 0; op = 1;
                 }
+
+                // canvas transition
                 p.canvas.style.transform = 'translateY(' + tx.toFixed(2) + 'px)';
                 p.canvas.style.opacity = op.toFixed(3);
 
-                // mirror transition on the active text step
                 var isFullText = !!(document.querySelector('#graphic.layout-full-text'));
-                var activeStep = document.querySelector('.step[data-active-index="' + (self.state.activeIndex || 0) + '"]');
-                if (activeStep && !isFullText) {
-                    activeStep.style.transform = 'translateY(' + tx.toFixed(2) + 'px)';
-                    activeStep.style.opacity = op.toFixed(3);
-                }
+
+                // ── KEY FIX: reset EVERY step each frame, so no step keeps a
+                // stale opacity/transform from a previous scroll position. ──
+                // All text steps stay fully visible. Only the canvas fades/transitions.
+                var allSteps = document.querySelectorAll('#sections .step');
+                allSteps.forEach(function (step) {
+                    step.style.opacity = '1';
+                    step.style.transform = 'none';
+                });
 
                 var dbg = document.getElementById('debug-state');
                 if (dbg) {
-                    dbg.textContent = 'activeIndex: ' + (self.state.activeIndex || 0) + '   progress: ' + pr.toFixed(2);
+                    dbg.textContent = 'activeIndex: ' + activeIdx + '   progress: ' + pr.toFixed(2);
                 }
             };
 
-            // ── Mouse events ──────────────────────────────────────────────
             p.mousePressed = function () {
                 var ai = self.state.activeIndex || 0;
-                if (ai === 3 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mousePressed) {
+                if (ai === 5 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mousePressed) {
                     window.VizSurvivalDashboard.mousePressed(p, self, p.mouseX, p.mouseY);
                 }
             };
-
             p.mouseMoved = function () {
                 var ai = self.state.activeIndex || 0;
-                if (ai === 3 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mouseMoved) {
+                if (ai === 5 && window.VizSurvivalDashboard && window.VizSurvivalDashboard.mouseMoved) {
                     window.VizSurvivalDashboard.mouseMoved(p, self, p.mouseX, p.mouseY);
                 }
             };
@@ -123,36 +116,27 @@ function startP5() {
         this.p5 = new p5(sketch);
     }
 
-
-    // set visualization state (called by scroll logic)
     SketchManager.prototype.setState = function (s) {
         if (s.activeIndex !== undefined) this.state.activeIndex = s.activeIndex;
         if (s.progress !== undefined) this.state.progress = s.progress;
     };
-
-    // delegate data handling to localRenderer
     SketchManager.prototype.setData = function (newData) {
         return localRenderer.setData(this, newData);
     };
-
-    // simple drawing routine, split into helpers for clarity
     SketchManager.prototype.draw = function (p) {
         var ai = this.state.activeIndex || 0;
         var progress = this.state.progress || 0;
         localRenderer.draw(p, this, ai, progress);
     };
 
-    // create (or replace) singleton manager and expose API
     if (window.__sketchAPI && window.__sketchAPI.p5) {
         try { window.__sketchAPI.p5.remove(); } catch (e) { }
         window.__sketchAPI = null;
     }
     var manager = new SketchManager();
-    // initialize data via localRenderer (fail fast if missing)
     if (!localRenderer || typeof localRenderer.setData !== 'function') {
         throw new Error('localRenderer.setData is required at startup.');
     }
-
     var setDataResult = localRenderer.setData(manager);
 
     var api = {
@@ -161,16 +145,11 @@ function startP5() {
         p5: manager.p5,
         data: manager.data
     };
-
-    // Expose a `ready` promise so callers can wait until data/layout are ready.
     if (setDataResult && typeof setDataResult.then === 'function') {
         api.ready = setDataResult.then(function () { return api; });
     } else {
         api.ready = Promise.resolve(api);
     }
-
-    // Expose the API globally once ready so consumers (like sections) see
-    // the populated data without racing the async load.
     api.ready.then(function () {
         try { window.__sketchAPI = api; } catch (e) { }
     }).catch(function () {

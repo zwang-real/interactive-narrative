@@ -1,114 +1,88 @@
 // sketch_renderer.js
 
 // Responsible for rendering the main visualization based on the current active index
+//
+// Index map (keep in sync with index.html data-active-index):
+//   0  Intro            full-text, no viz
+//   1  Part 1 title     full-text, no viz
+//   2  Image 1 Map      (not built yet — placeholder)
+//   3  Image 2 Scatter  VizYelpReviews
+//   4  Part 2 title     full-text, no viz
+//   5  Image 3 Dashboard VizSurvivalDashboard
+//   6  Image 4 Housing  VizHousingMap
+//   7  Part 3 title     full-text, no viz
+//   8  Image 5 Report   (not built yet — placeholder)
+//   9  Authors          full-text, no viz
 (function () {
     window.Renderer = {
 
         setData: function (manager) {
-            var self = this;
-
             manager.offsetX = (manager.margin && manager.margin.left) || 20;
             manager.offsetY = (manager.margin && manager.margin.top) || 0;
 
-            function computeLayout(data) {
-                manager.data = data;
-            }
+            function computeLayout(data) { manager.data = data; }
 
             var yelpDataRequest = fetch('data/yelp_filtered/yelp_restaurants_philadelphia_zips.json')
-                .then(function (response) { return response.json(); })
+                .then(function (r) { return r.json(); })
                 .catch(function () { return []; });
             var housingDataRequest = fetch('data/philadelphia_safmr_master.csv')
-                .then(function (response) {
-                    if (!response.ok) return '';
-                    return response.text();
-                })
+                .then(function (r) { return r.ok ? r.text() : ''; })
                 .catch(function () { return ''; });
             var housingGeoRequest = fetch('data/philadelphia_zctas.geojson')
-                .then(function (response) {
-                    if (!response.ok) return null;
-                    return response.json();
-                })
+                .then(function (r) { return r.ok ? r.json() : null; })
                 .catch(function () { return null; });
             var yelpYearSummaryRequest = fetch('data/yelp_filtered/yelp_zip_year_summary.json')
-                .then(function (response) {
-                    if (!response.ok) return null;
-                    return response.json();
-                })
+                .then(function (r) { return r.ok ? r.json() : null; })
                 .catch(function () { return null; });
             var survivalDataRequest = fetch('data/yelp_filtered/image3_survival_by_variable.json')
-                .then(function (response) {
-                    if (!response.ok) return null;
-                    return response.json();
-                })
+                .then(function (r) { return r.ok ? r.json() : null; })
                 .catch(function () { return null; });
 
             return Promise.all([yelpDataRequest, housingDataRequest, housingGeoRequest, yelpYearSummaryRequest, survivalDataRequest])
                 .then(function (results) {
-                    var yelpData       = results[0];
-                    var housingData    = results[1];
-                    var housingGeo     = results[2];
+                    var yelpData        = results[0];
+                    var housingData     = results[1];
+                    var housingGeo      = results[2];
                     var yelpYearSummary = results[3];
-                    var survivalData   = results[4];
+                    var survivalData    = results[4];
                     computeLayout(yelpData);
                     manager.yelpReviewData        = window.VizYelpReviews.prepareData(yelpData);
-                    manager.housingMapData         = window.VizHousingMap.prepareData(housingData);
-                    manager.housingGeoData         = window.VizHousingMap.prepareGeoData(housingGeo);
-                    manager.yelpZipYearData        = window.VizZipCompare.prepareYelpData(yelpYearSummary);
-                    manager.survivalDashboardData  = window.VizSurvivalDashboard.prepareData(survivalData);
-                    manager.openingData = window.VizOpening.prepareData(yelpData);
+                    manager.housingMapData        = window.VizHousingMap.prepareData(housingData);
+                    manager.housingGeoData        = window.VizHousingMap.prepareGeoData(housingGeo);
+                    manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(yelpYearSummary);
+                    manager.survivalDashboardData = window.VizSurvivalDashboard.prepareData(survivalData);
                     return manager.data;
                 })
                 .catch(function () {
                     computeLayout([]);
                     manager.yelpReviewData        = window.VizYelpReviews.prepareData([]);
-                    manager.housingMapData         = window.VizHousingMap.prepareData('');
-                    manager.housingGeoData         = window.VizHousingMap.prepareGeoData(null);
-                    manager.yelpZipYearData        = window.VizZipCompare.prepareYelpData(null);
-                    manager.survivalDashboardData  = window.VizSurvivalDashboard.prepareData(null);
+                    manager.housingMapData        = window.VizHousingMap.prepareData('');
+                    manager.housingGeoData        = window.VizHousingMap.prepareGeoData(null);
+                    manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(null);
+                    manager.survivalDashboardData = window.VizSurvivalDashboard.prepareData(null);
                     return manager.data;
                 });
         },
 
         draw: function (p, manager, ai, progress) {
-            if (ai === 0) {
-                window.VizOpening.draw(p, manager);
-                return;
-            }
-
-            if (ai === 1) {
-                window.VizTitle.draw(p, manager, ai, progress);
-                return;
-            }
-
-            if (ai === 2) {
+            // Image 2 — Scatter: reviews vs ratings
+            if (ai === 3) {
                 window.VizYelpReviews.draw(p, manager, ai, progress);
                 return;
             }
-
-            if (ai === 3) {
+            // Image 3 — Survival dashboard (interactive)
+            if (ai === 5) {
                 window.VizSurvivalDashboard.draw(p, manager);
                 return;
             }
-
-            if (ai === 4) {
+            // Image 4 — Housing / rent map
+            if (ai === 6) {
                 window.VizHousingMap.draw(p, manager, ai, progress);
                 return;
             }
-
-            if (ai === 5) {
-                window.VizZipCompare.draw(p, manager, ai, progress);
-                return;
-            }
-
-            if (ai === 6 || ai === 9) {
-                window.VizProgressColor.draw(p, manager, ai, progress);
-                return;
-            }
-
-            if (ai === 7) {
-                window.VizBar.draw(p, manager, ai, progress);
-                return;
-            }
+            // All other indices are full-text sections (Intro, Part titles,
+            // Authors) or not-yet-built images (Map=2, Report=8): draw nothing.
+            // p.background(255) in the manager already cleared the canvas.
         }
     };
 })();

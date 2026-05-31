@@ -26,120 +26,109 @@
   <div class="container">
     <div id='graphic'>
       <div id='sections'>
+        
+<!-- Cover info block — appears right after the opening animation -->
+<section class="step" data-active-index="0" data-layout="full-text">
+  <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; min-height: 70vh;">
 
-      <!-- Cover info block — appears right after the opening animation fades out -->
-      <section class="step" data-active-index="1" data-layout="full-text">
-        <div style="display: flex; align-items: center; justify-content: center; gap: 48px; flex-wrap: wrap; min-height: 70vh;">
+    <!-- Left: subtitle + authors -->
+    <div style="flex: 1; min-width: 280px; max-width: 480px;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 1.5rem;">
+        Philadelphia · Yelp Open Dataset · 2022
+      </div>
+      <div style="width: 40px; height: 2px; background: #C94E1E; margin-bottom: 1.5rem; border-radius: 1px;"></div>
+      <div style="font-family: 'Spectral', Georgia, serif; font-size: 20px; font-weight: 400; color: #333; line-height: 1.6; margin-bottom: 2rem;">
+        How independent restaurants outlast chains in ratings but not in survival, and what the data reveals about who gets to stay.
+      </div>
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #888; letter-spacing: 0.04em;">
+        By <strong style="color: #1a1a18;">Susan Zhang</strong> &amp; <strong style="color: #1a1a18;">Zijing Wang</strong>
+      </div>
+    </div>
 
-      <!-- Left: subtitle + authors -->
-        <div style="flex: 1; min-width: 280px; max-width: 480px;">
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: #888; margin-bottom: 1.5rem;">
-          Philadelphia · Yelp Open Dataset · 2022
-        </div>
-        <div style="width: 40px; height: 2px; background: #C94E1E; margin-bottom: 1.5rem; border-radius: 1px;"></div>
-        <div style="font-family: 'Spectral', Georgia, serif; font-size: 20px; font-weight: 400; color: #333; line-height: 1.6; margin-bottom: 2rem;">
-          How independent restaurants outlast chains in ratings but not in survival, and what the data reveals about who gets to stay.
-        </div>
-        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #888; letter-spacing: 0.04em;">
-          By <strong style="color: #1a1a18;">Susan Zhang</strong> &amp; <strong style="color: #1a1a18;">Zijing Wang</strong>
-        </div>
-        </div>
-
-      <!-- Right: restaurant photo -->
-      <div style="flex: 1; min-width: 280px; max-width: 460px;">
-        <img src="img/restaurant.jpg" alt="A neighborhood restaurant"
+    <!-- Right: restaurant photo -->
+    <div style="flex: 1; min-width: 280px; max-width: 460px;">
+      <img src="img/restaurant.jpg" alt="A neighborhood restaurant"
            style="width: 100%; height: auto; border-radius: 8px; display: block;" />
-      </div>
+    </div>
 
-      </div>
-      </section>
+  </div>
+</section>
+        <!-- 0 · Intro — full-text -->
+        <section class="step part-title" data-active-index="0" data-layout="full-text">
+          <div class="title">Introduction</div>
+          <p>
+            On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It had a four-star rating, nearly nine hundred reviews from people who called it a neighborhood favorite. By 2018, it was gone. No announcement, no explanation, just a listing that stopped updating.
+          </p>
+          <p>
+            This is not a story about one restaurant. It is a story about a pattern: one that repeats itself across thousands of independent businesses in cities like Philadelphia, hiding in plain sight inside the data.
+          </p>
+          <p>
+            Using Yelp's open dataset of over seven thousand food and restaurant businesses in Philadelphia, we trace the survival patterns of independent shops against chain restaurants, and find that the gap between them is structural, persistent, and largely invisible to the people living inside it.
+          </p>
+        </section>
 
-      <!-- Intro — opening narrative, full-text -->
-      <section class="step part-title" data-active-index="1" data-layout="full-text">
-        <div class="title">Introduction</div>
-        <p>
-          On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It had a four-star rating, nearly nine hundred reviews from people who called it a neighborhood favorite. By 2018, it was gone. No announcement, no explanation, just a listing that stopped updating.
-        </p>
-        <p>
-          This is not a story about one restaurant. It is a story about a pattern — one that repeats itself across thousands of independent businesses in cities like Philadelphia, hiding in plain sight inside the data.
-        </p>
-        <p>
-          Using Yelp's open dataset of over seven thousand food and restaurant businesses in Philadelphia, we trace the survival patterns of independent shops against chain restaurants, and find that the gap between them is structural, persistent, and largely invisible to the people living inside it.
-        </p>
-      </section>
+        <!-- 1 · Part 1 title — full-text -->
+        <section id="part1" class="step part-title" data-active-index="1" data-layout="full-text">
+          <div class="title">Part 1 · The City's Pulse</div>
+          On a street corner in Philadelphia, two restaurants open the same year. One is independent, the other a chain. From the outside, they look equally matched. But zoom out to the level of the whole city, and a different picture emerges. Not all neighborhoods offer the same starting conditions. Some cluster with thriving independents. Others are quietly dominated by chains.
+        </section>
 
-      <!-- Part 1 heading — Spectral SC, full-text -->
-      <section id="part1" class="step part-title" data-active-index="1" data-layout="full-text">
-        <div class="title">Part 1 · The City's Pulse</div>
-        On a street corner in Philadelphia, two restaurants open the same year. One is independent, the other a chain. From the outside, they look equally matched. But zoom out to the level of the whole city, and a different picture emerges. Not all neighborhoods offer the same starting conditions. Some cluster with thriving independents. Others are quietly dominated by chains.
-      </section>
-
-      <!-- Image 1: Map -->
-      <section class="step" data-active-index="9">
-        <div class="title">Where They Stand — Rating & Survival Across the City</div>
-        This map visualizes the geographic distribution of independent and chain restaurants across Philadelphia, encoding survival rate and average rating through color and shade. It sets the stage by showing that location alone creates unequal starting conditions.
-      </section>
-
-        <!-- Image title — Spectral bold (default) -->
+        <!-- 2 · Image 1 Map (not built yet) -->
         <section class="step" data-active-index="2">
-          <div class="title">Reviews and Ratings</div>
+          <div class="title">Where They Stand — Rating & Survival Across the City</div>
+          This map visualizes the geographic distribution of independent and chain restaurants across Philadelphia, encoding survival rate and average rating through color and shade. It sets the stage by showing that location alone creates unequal starting conditions.
+        </section>
+
+        <!-- 3 · Image 2 Scatter (VizYelpReviews) -->
+        <section class="step" data-active-index="3">
+          <div class="title">More Reviews, Still Closing — Rating vs. Review Count</div>
           Each circle is a Philadelphia restaurant. The x-axis shows review count, the y-axis shows rating, and larger circles indicate more reviews. Dotted lines mark the mean review count and mean rating.
         </section>
 
-        <!-- Part 2 heading — Spectral SC, full-text transition section -->
-        <section id="part2" class="step part-title" data-active-index="2" data-layout="full-text">
+        <!-- 4 · Part 2 title — full-text -->
+        <section id="part2" class="step part-title" data-active-index="4" data-layout="full-text">
           <div class="title">Part 2 · What Determines Survival</div>
-          Independent restaurants close at higher rates despite better ratings.
-          So what actually separates the ones that stay? The answer is not in
-          the reviews. It is in the choices businesses make before a single
-          customer walks through the door.
+          Independent restaurants close at higher rates despite better ratings. So what actually separates the ones that stay? The answer is not in the reviews. It is in the choices businesses make before a single customer walks through the door.
         </section>
 
-        <!-- Image title — Spectral bold (default) -->
-        <section class="step" data-active-index="3">
-          <div class="title">Delivery, Price, Location — Does Any of It Help?</div>
-          Among Philadelphia restaurants, offering delivery is associated with
-          a survival rate of 68.9%, compared to 33.6% for those without.
-          Price tier, parking, and cuisine type each tell a different part of
-          the story. Click through the variables on the left to see which
-          choices move the needle.
-        </section>
-
+        <!-- 5 · Image 3 Dashboard (VizSurvivalDashboard, interactive) -->
         <section class="step" data-active-index="5">
-          <div class="title">Same visualization multiple sections</div>
-          Some visualizations may be relevant to multiple sections. You can reuse the same visualization
-          across different sections to reinforce key points. Or build on the previous visualization to just add on.
+          <div class="title">Delivery, Price, Location — Does Any of It Help?</div>
+          Among Philadelphia restaurants, offering delivery is associated with a survival rate of 68.9%, compared to 33.6% for those without. Price tier, parking, and cuisine type each tell a different part of the story. Click through the variables on the left to see which choices move the needle.
         </section>
 
-        <div id="extra-space"></div>
-
-        <!-- Part 3 heading — Spectral SC, full-text -->
-        <section id="part3" class="step part-title" data-active-index="X" data-layout="full-text">
-          <div class="title">Part 3 · What If It Had Chosen Differently</div>
-          The data has shown us the patterns. Now the question becomes personal. Garces Trading Company earned real loyalty and then quietly disappeared. But what if it had made different choices? What if the outcome was not inevitable, but written into decisions that could have gone another way?
-        </section>
-
+        <!-- 6 · Image 4 Housing map (VizHousingMap) -->
         <section class="step" data-active-index="6">
-          <div class="title">Examples</div>
-          There is two examples in this code. One is a grid of circles that changes color
-          based on the section index. The other is a scatter plot and bar chart that
-          shows random data points. You can modify or replace these examples with your own visualizations.
-          Make sure you read both source files to understand how they work.
+          <div class="title">Place Matters — Rent and Restaurant Survival</div>
+          This map places neighborhood rent levels side by side with restaurant survival rates. Higher-rent, faster-growing areas tend to be harder places for independent restaurants to survive. Location is not just a coordinate; it is a recurring cost.
         </section>
 
+        <!-- 7 · Part 3 title — full-text -->
+        <section id="part3" class="step part-title" data-active-index="7" data-layout="full-text">
+          <div class="title">Part 3 · It Did Everything Right</div>
+          The data has shown us the patterns. Now, carrying those patterns with us, we return to the restaurant from the beginning and check its report card, line by line.
+        </section>
 
-        <section class="step author-section" data-active-index="10" data-layout="full-text">
+        <!-- 8 · Image 5 Report card (not built yet) -->
+        <section class="step" data-active-index="8">
+          <div class="title">The Report Card</div>
+          Garces Trading Company offered delivery, held a four-star rating, drew nearly nine hundred reviews, had parking, and sat at a mid-range price point. By every measure we have seen, it stood on the side of the survivors. It should have survived. It did not.
+        </section>
+
+        <!-- 9 · Authors — full-text -->
+        <section class="step author-section" data-active-index="9" data-layout="full-text">
           <div class="title">About the Authors</div>
           <div class="authors">
             <div class="author">
               <div class="author-name">Susan Zhang</div>
-              <div class="author-bio">I'm a first year student in MSIM program, with specializations in AI and Data Science. My research interests currently are Human-AI interaction and how to use AI to in fields like healthcare.</div>
+              <div class="author-bio">I'm a first year student in MSIM program, with specializations in AI and Data Science. My research interests currently are Human-AI interaction and how to use AI in fields like healthcare.</div>
               <div class="author-bio">I did the data extraction and cleaning for the project. I also did the review vs rating scatterplot, the survival dashboard, and the business simulator.</div>
             </div>
             <div class="author">
               <div class="author-name">Zijing Wang</div>
               <div class="author-bio">I am a first year student in the MSIM program focusing on data science and AI.</div>
-            <div class="author-bio">For this project, I handled data cleaning and preprocessing of the Yelp Open Dataset, built the survival dashboard and business simulator visualizations, wrote the narrative text across all three parts, and designed the overall page layout including typography and navigation.</div>
+              <div class="author-bio">For this project, I handled data cleaning and preprocessing of the Yelp Open Dataset, built the survival dashboard and business simulator visualizations, wrote the narrative text across all three parts, and designed the overall page layout including typography and navigation.</div>
+            </div>
           </div>
         </section>
 
@@ -151,21 +140,16 @@
 
   <!-- p5.js (using CDN) -->
   <script src="https://cdn.jsdelivr.net/npm/p5@1.6.0/lib/p5.min.js"></script>
-  <!-- helpers (data/loading, scroller, visual controller) -->
+  <!-- helpers -->
   <script src="js/helpers/data_loader.js"></script>
   <script src="js/helpers/scroller.js"></script>
   <script src="js/helpers/visual_controller.js"></script>
-
-  <!-- orchestrator (wires scroller -> sketch) -->
   <script src="js/helpers/sections.js"></script>
-
-  <!-- sketches (manager) -->
+  <!-- manager -->
   <script src="js/sketches/sketch_manager.js"></script>
-
-  <!-- sketches (example renderer) -->
+  <!-- example renderer -->
   <script src="js/sketches/examples/sketch_grid.js"></script>
-
-  <!-- sketches (renderers): UPDATE HERE FOR PROJECT -->
+  <!-- viz renderers -->
   <script src="js/sketches/viz/viz_title.js"></script>
   <script src="js/sketches/viz/viz_yelp_reviews.js"></script>
   <script src="js/sketches/viz/viz_housing_map.js"></script>
@@ -175,6 +159,7 @@
   <script src="js/sketches/viz/viz_bar.js"></script>
   <script src="js/sketches/viz/viz_survival_dashboard.js"></script>
   <script src="js/sketches/sketch_renderer.js"></script>
+  <!-- standalone opening animation -->
   <script src="js/sketches/viz/opening_standalone.js"></script>
 
 </body>
