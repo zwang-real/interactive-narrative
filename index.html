@@ -170,8 +170,14 @@
           </p>
         </section>
 
-        <!-- 9 · Authors — full-text -->
-        <section class="step author-section" data-active-index="9" data-layout="full-text">
+        <!-- 9 · Closing epilogue — empty full-text step. It reserves the scroll
+             distance for the full-screen starfield, which closing_stars.js draws
+             on a fixed overlay. Being a real step (not a bare gap) keeps the
+             scroller from flickering between the report card and the authors. -->
+        <section id="closing-step" class="step" data-active-index="9" data-layout="full-text"></section>
+
+        <!-- 10 · Authors — full-text -->
+        <section class="step author-section" data-active-index="10" data-layout="full-text">
           <div class="title">About the Authors</div>
           <div class="authors">
             <div class="author">
@@ -219,6 +225,8 @@
   <script src="js/sketches/sketch_renderer.js"></script>
   <!-- standalone opening animation -->
   <script src="js/sketches/viz/opening_standalone.js"></script>
+  <!-- closing starfield -->
+  <script src="js/sketches/viz/closing_stars.js"></script>
 
 </body>
 

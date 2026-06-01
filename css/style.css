@@ -308,3 +308,113 @@ body {
   margin-left: auto !important;
   margin-right: auto !important;
 }
+
+/* ── Closing epilogue: full-height dark starfield, in normal flow ── */
+.closing-section {
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  min-height: 100vh;
+  position: relative;       /* anchor for absolute children */
+  padding: 0 !important;
+  overflow: hidden;
+  border-radius: 12px;
+  background: #0f1626;       /* deep navy fallback behind the canvas */
+}
+.closing-section #closing-stars {
+  position: absolute;        /* fill THIS section, not the viewport */
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: #0f1626;
+  display: block;
+}
+.closing-section .closing-inner {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  z-index: 2;                /* above the stars canvas */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1.4rem;
+  pointer-events: none;
+}
+.closing-line {
+  font-family: "Spectral SC", Georgia, serif;
+  font-size: clamp(28px, 2.4vw + 18px, 56px);
+  font-weight: 700;
+  color: #f5f3ee;
+  text-align: center;
+  letter-spacing: 0.02em;
+  animation: closingFade 1.8s ease both;
+}
+.closing-sub {
+  font-family: "Spectral", Georgia, serif;
+  font-style: italic;
+  font-size: clamp(14px, 0.8vw + 10px, 22px);
+  color: #aab2c4;
+  text-align: center;
+  animation: closingFade 1.8s ease 0.6s both;
+}
+@keyframes closingFade {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Closing epilogue (bookends the opening animation) ──────────────────── */
+
+/* Empty step that reserves scroll distance for the closing overlay. */
+#closing-step {
+  min-height: 200vh;
+}
+
+/* Fixed full-screen overlay holding the closing canvas + lines.
+   Hidden by default so it never flashes on load; the script shows it
+   only while the spacer fills the viewport. */
+#closing-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  pointer-events: none;      /* never block scrolling */
+  opacity: 0;
+  visibility: hidden;
+}
+
+#closing-canvas {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+#closing-copy {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(860px, 86vw);
+  text-align: center;
+}
+
+#closing-line {
+  font-family: 'Spectral SC', Georgia, serif;
+  font-weight: 700;
+  font-size: clamp(24px, 4.4vw, 56px);
+  color: #F5F0E8;
+  opacity: 0;
+  letter-spacing: 0.02em;
+  text-shadow: 0 0 30px rgba(13, 27, 42, 0.8);
+}
+
+#closing-sub {
+  margin-top: 20px;
+  font-family: 'Spectral', Georgia, serif;
+  font-style: italic;
+  font-size: clamp(14px, 1.6vw, 22px);
+  line-height: 1.6;
+  color: #F5F0E8;
+  opacity: 0;
+}
