@@ -418,3 +418,17 @@ body {
   color: #F5F0E8;
   opacity: 0;
 }
+
+/* Clickable data numbers in the prose that drive the interactive visualizations. */
+.data-link {
+  cursor: pointer;
+  color: inherit;
+  border-bottom: 1px dashed #1a1a18;
+  transition: background 0.12s ease, color 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+.data-link:hover {
+  background: #1a1a18;
+  color: #faf8f3;                  /* warm cream, softer than pure white */
+  box-shadow: 0 0 0 2px #1a1a18;   /* pads the highlight without shifting the text */
+  border-bottom-color: transparent;
+}

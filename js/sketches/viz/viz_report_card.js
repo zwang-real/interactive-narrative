@@ -21,10 +21,12 @@
     var COL_CLOSED = '#A32D2D';
     var COL_EMPTY  = '#C9C5BD';   // empty grey circle
     var COL_BTN    = '#1A1A18';
+    var COL_HIGH_FLASH = '#E69F00';   // warm flash tint, matches the dashboard accent
 
     // interaction state lives on the module
     var graded = [false, false, false, false, false];
     var revealed = false;
+    var flash = [0, 0, 0, 0, 0];   // performance.now() per row when last flashed
     // store clickable hit-boxes computed during draw, used by mousePressed
     var hitboxes = [];     // { x, y, r, rowIndex }
     var revealBox = null;  // { x, y, w, h }
@@ -42,6 +44,11 @@
         resetState: function () {
             graded = [false, false, false, false, false];
             revealed = false;
+            flash = [0, 0, 0, 0, 0];
+        },
+        // Briefly highlight a row when its number is clicked in the prose.
+        flashRow: function (index) {
+            if (index >= 0 && index < flash.length) flash[index] = performance.now();
         },
 
         draw: function (p, manager, ai, progress) {
@@ -97,6 +104,17 @@
             for (var i = 0; i < ROWS.length; i++) {
                 var row = ROWS[i];
                 var cy = rowsTop + i * rowH + rowH / 2;
+
+                // flash highlight when a matching number in the prose is clicked
+                var since = flash[i] ? (performance.now() - flash[i]) : Infinity;
+                var fa = clamp01(1 - since / 900);
+                if (fa > 0) {
+                    var fc = p.color(COL_HIGH_FLASH);
+                    fc.setAlpha(48 * fa);
+                    p.noStroke();
+                    p.fill(fc);
+                    p.rect(left + 22, rowsTop + i * rowH + 2, w - 44, rowH - 4, 6);
+                }
 
                 // divider
                 p.stroke(COL_LINE);

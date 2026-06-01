@@ -259,7 +259,16 @@
             animProgress = {};
             return survivalData;
         },
-
+        // Switch the active variable from outside the canvas (a clicked number in
+        // the prose). draw() rebuilds the bars from activeVar every frame, so we
+        // only set the variable and reset its bars so they grow in again.
+        setVariable: function (key) {
+            var valid = VARIABLES.some(function (v) { return v.key === key; });
+            if (!valid || activeVar === key) return;
+            activeVar = key;
+            var rows = (survivalData || {})[activeVar] || [];
+            rows.forEach(function (_, j) { animProgress[activeVar + '_' + j] = 0; });
+        },
         draw: function (p, manager) {
             var now = p.millis();
             var dt  = Math.min((now - lastFrameTime) / 1000, 0.1);
