@@ -47,6 +47,7 @@
                     var survivalData    = results[4];
                     computeLayout(yelpData);
                     manager.yelpReviewData        = window.VizYelpReviews.prepareData(yelpData);
+                    manager.whereTheyStandData    = window.VizWhereTheyStand.prepareData(yelpData);
                     manager.housingMapData        = window.VizHousingMap.prepareData(housingData);
                     manager.housingGeoData        = window.VizHousingMap.prepareGeoData(housingGeo);
                     manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(yelpYearSummary);
@@ -57,6 +58,7 @@
                 .catch(function () {
                     computeLayout([]);
                     manager.yelpReviewData        = window.VizYelpReviews.prepareData([]);
+                    manager.whereTheyStandData    = window.VizWhereTheyStand.prepareData([]);
                     manager.housingMapData        = window.VizHousingMap.prepareData('');
                     manager.housingGeoData        = window.VizHousingMap.prepareGeoData(null);
                     manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(null);
@@ -67,6 +69,11 @@
         },
 
         draw: function (p, manager, ai, progress) {
+            // Image 1 - Where They Stand: citywide rating and survival map
+            if (ai === 2) {
+                window.VizWhereTheyStand.draw(p, manager);
+                return;
+            }
             // Image 2 — Heatmap: reviews vs ratings, open vs closed
             if (ai === 3) {
                 window.VizYelpHeatmap.draw(p, manager);
@@ -88,7 +95,7 @@
                 return;
             }
             // All other indices are full-text sections (Intro, Part titles,
-            // Authors) or not-yet-built images (Map=2, Report=8): draw nothing.
+            // Authors): draw nothing.
             // p.background(255) in the manager already cleared the canvas.
         }
     };
