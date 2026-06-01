@@ -38,7 +38,7 @@
       </div>
       <div style="width: 40px; height: 2px; background: #C94E1E; margin-bottom: 1.5rem; border-radius: 1px;"></div>
       <div style="font-family: 'Spectral', Georgia, serif; font-size: 20px; font-weight: 400; color: #333; line-height: 1.6; margin-bottom: 2rem;">
-        How independent restaurants outlast chains in ratings but not in survival, and what the data reveals about who gets to stay.
+        What actually decides whether a restaurant survives in Philadelphia, and why good reviews are not enough to keep one open.
       </div>
       <div style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #888; letter-spacing: 0.04em;">
         By <strong style="color: #1a1a18;">Susan Zhang</strong> &amp; <strong style="color: #1a1a18;">Zijing Wang</strong>
@@ -58,10 +58,10 @@
         <section class="step part-title" data-active-index="0" data-layout="full-text">
           <div class="title">Introduction</div>
           <p>
-            On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It held a four-star rating and nearly nine hundred reviews from people who called it a neighborhood favorite. By 2018 it was gone. No announcement, no explanation, just a listing that stopped updating.
+            On a side street in Philadelphia, a restaurant called <strong>Garces Trading Company</strong> appeared on Yelp in the winter of 2010. It held a four-star rating and nearly 900 reviews from people who called it a neighborhood favorite. By 2018 it was gone. No announcement, no explanation, just a listing that stopped updating.
           </p>
           <p>
-            This is not a story about one restaurant. It is a story about a pattern, one that repeats across thousands of independent businesses in cities like Philadelphia and hides in plain sight inside the data. Using Yelp's open dataset of more than seven thousand food and restaurant businesses in Philadelphia, we trace how independent shops survive compared to chains. We find a gap that is structural, persistent, and largely invisible to the people living inside it. The most counterintuitive part is this: independent restaurants do not disappear because they are worse.
+            This is not a story about one restaurant. It is a story about what survival actually depends on, and how often it has nothing to do with how good a place is. Using Yelp's open dataset of more than seven thousand food and restaurant businesses in Philadelphia, we look for the things that separate the restaurants that lasted from the ones that closed. The pattern that emerges is structural, persistent, and largely invisible to the people living inside it. The most counterintuitive part is this: the restaurants that close are often not the worse ones.
           </p>
         </section>
 
@@ -69,7 +69,7 @@
         <section id="part1" class="step part-title" data-active-index="1" data-layout="full-text">
           <div class="title">The City's Pulse</div>
           <p>
-            Before we judge any single restaurant, it helps to pull the camera back. A city is never an even canvas. If independent shops and chains start on different ground from the very first day, then the question of who survives may already be partly decided before a single door opens.
+            Before we judge any single restaurant, it helps to pull the camera back. A city is never an even canvas. Where a restaurant opens, what it is able to offer, and what it costs to stay there shift from one block to the next. If the ground itself is uneven, then the question of who survives may be partly decided before a single door opens.
           </p>
           <img src="img/philly.jpg" alt="A Philadelphia rowhouse street"
               style="width: 100%; max-width: 560px; aspect-ratio: 21 / 9; object-fit: cover; border-radius: 8px; margin-top: 2rem; display: block;" />
@@ -101,7 +101,7 @@
         <!-- 3b · More Reviews, Still Closing — paragraph 2 (same viz, index 3) -->
         <section class="step" data-active-index="3">
           <p>
-            It is not. Independent restaurants average 3.67 stars, well above the 2.45 average for chains, yet even the well-rated, heavily reviewed independents close at higher rates than comparable chains. Across the whole city, independents survive at 53.3% against 70.4% for chains, a gap of roughly seventeen points. Customer love does not convert into survival. The question is no longer how good a restaurant is. It is what actually decides who stays.
+            It is not. The closed panel stays crowded exactly where we would expect safety, among restaurants with strong ratings and hundreds of reviews. A high score and a loyal following do not move a restaurant out of danger. Independents do survive at lower rates than chains, 53.3% against 70.4%, but that gap sits to the side of the larger point. Customer love does not convert into survival. The question is no longer how good a restaurant is. It is what actually decides who stays.
           </p>
         </section>
 
@@ -126,7 +126,7 @@
         <!-- 5b · Does Any of It Help? — paragraph 2 (same viz, index 5) -->
         <section class="step" data-active-index="5">
           <p>
-            The strongest signal by far is delivery. Restaurants that offer it survive at <span class="data-link" data-var="delivery">68.9 percent</span>, compared to just <span class="data-link" data-var="delivery">33.6 percent</span> for those that do not, a gap of nearly thirty-five points. Cuisine matters too, ranging from Caribbean at <span class="data-link" data-var="cuisine">71.6 percent</span> down to French at <span class="data-link" data-var="cuisine">31.4 percent</span>. <span class="data-link" data-var="parking">Parking</span> and <span class="data-link" data-var="takeout">takeout</span>, by contrast, make almost no difference. What separates survivors is less about how good the food is and more about structural choices that decide how many customers a business can reach.
+            The strongest signal by far is delivery. Restaurants that offer it survive at <span class="data-link" data-var="delivery">68.9%</span>, compared to just <span class="data-link" data-var="delivery">33.6%</span> for those that do not, a gap of nearly thirty-five points. Cuisine matters too, ranging from Caribbean at <span class="data-link" data-var="cuisine">71.6%</span> down to French at <span class="data-link" data-var="cuisine">31.4%</span>. <span class="data-link" data-var="parking">Parking</span> and <span class="data-link" data-var="takeout">takeout</span>, by contrast, make almost no difference. What separates survivors is less about how good the food is and more about structural choices that decide how many customers a business can reach.
           </p>
         </section>
 
@@ -159,7 +159,7 @@
         <section class="step" data-active-index="8">
           <div class="title">The Report Card</div>
           <p>
-            Garces Trading Company offered delivery when only <span class="data-link" data-row="0">54.5 percent</span> of restaurants did. It held <span class="data-link" data-row="1">four stars</span> against a city average of 3.58. It drew roughly <span class="data-link" data-row="2">nine hundred reviews</span> when the median restaurant had thirty-three. It had parking, like <span class="data-link" data-row="3">65.3 percent</span> of the city, and sat at the most common <span class="data-link" data-row="4">price tier</span>. Grade it yourself, see if every box turns green.
+            Garces Trading Company offered delivery when only <span class="data-link" data-row="0">54.5%</span> of restaurants did. It held <span class="data-link" data-row="1">4.0 stars</span> against a city average of 3.58. It drew roughly <span class="data-link" data-row="2">900 reviews</span> when the median restaurant had thirty-three. It had parking, like <span class="data-link" data-row="3">65.3%</span> of the city, and sat at the most common <span class="data-link" data-row="4">price tier</span>. Grade it yourself, see if every box turns green.
           </p>
         </section>
 
