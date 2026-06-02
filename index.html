@@ -66,17 +66,17 @@
         </section>
 
         <!-- 1 · Part 1 title — full-text with image -->
-        <section id="part1" class="step part-title before-compact-section" data-active-index="1" data-layout="full-text">
-          <div class="title">The City's Pulse</div>
-          <p>
-            Before we judge any single restaurant, it helps to pull the camera back. A city is never an even canvas. Where a restaurant opens, what it is able to offer, and what it costs to stay there shift from one block to the next. If the ground itself is uneven, then the question of who survives may be partly decided before a single door opens.
-          </p>
-          <img src="img/philly.jpg" alt="A Philadelphia rowhouse street"
-              style="width: 100%; max-width: 560px; aspect-ratio: 21 / 9; object-fit: cover; border-radius: 8px; margin-top: 2rem; display: block;" />
+        <div class="sticky-image-group">
+          <div class="sticky-copy-flow">
+        <section id="part1" class="step part-title sticky-copy-step" data-active-index="1" data-layout="full-text">
+            <div class="title">The City's Pulse</div>
+            <p>
+              Before we judge any single restaurant, it helps to pull the camera back. A city is never an even canvas. Where a restaurant opens, what it is able to offer, and what it costs to stay there shift from one block to the next. If the ground itself is uneven, then the question of who survives may be partly decided before a single door opens.
+            </p>
         </section>
 
         <!-- 2a · Where They Stand — paragraph 1 -->
-        <section class="step compact-text-section" data-active-index="2" data-layout="full-text">
+        <section class="step sticky-copy-step" data-active-index="2" data-layout="full-text">
           <div class="title">Where They Stand</div>
           <p>
             This map plots every restaurant in our Philadelphia dataset, with color separating independents from chains and shading showing survival. At a glance it looks like scattered dots, but once you notice how the colors cluster, the structure of the city begins to surface.
@@ -85,19 +85,17 @@
             Independent restaurants concentrate heavily in a handful of neighborhoods, while chains spread more evenly across the whole map. Some areas are almost entirely made of thriving independents, others are quietly dominated by chains. Location itself is a form of inequality. Where you open says something about how long you are likely to last. But place is only where the story begins.
           </p>
         </section>
+          </div>
+          <div class="sticky-side-image">
+            <img src="img/philly.jpg" alt="A Philadelphia rowhouse street" />
+          </div>
+        </div>
 
         <!-- 3a · More Reviews, Still Closing — paragraph 1 -->
-        <section class="step" data-active-index="3">
+        <section class="step after-sticky-section" data-active-index="3">
           <div class="title">More Reviews, Still Closing</div>
           <p>
-            If location shapes the starting line, what about quality? Intuition says the better-rated and more-loved a restaurant is, the longer it should last. This heatmap bins every restaurant by review count and rating, and splits them into two panels: the ones still open, and the ones that closed. If popularity protected restaurants, the closed panel should be nearly empty in the high-rating, high-review cells.
-          </p>
-        </section>
-
-        <!-- 3b · More Reviews, Still Closing — paragraph 2 (same viz, index 3) -->
-        <section class="step" data-active-index="3">
-          <p>
-            It is not. The closed panel stays crowded exactly where we would expect safety, among restaurants with strong ratings and hundreds of reviews. A high score and a loyal following do not move a restaurant out of danger. Independents do survive at lower rates than chains, 53.3% against 70.4%, but that gap sits to the side of the larger point. Customer love does not convert into survival. The question is no longer how good a restaurant is. It is what actually decides who stays.
+            If location shapes the starting line, what about quality? We might expect better-rated, more-reviewed restaurants to survive longer. This heatmap groups restaurants by rating and review count, then separates those still open from those that closed. If popularity protected restaurants, the closed panel would be nearly empty in the high-rating, high-review cells. Instead, it stays crowded. Strong ratings and hundreds of reviews do not move a restaurant out of danger. Independents still survive at lower rates than chains, 53.3% compared with 70.4%, but the larger point is simpler: customer love does not guarantee survival. The question is not only how good a restaurant is. It is what actually decides who stays.
           </p>
         </section>
 
@@ -107,12 +105,11 @@
           <p>
             The answer is not in the reviews. It lives in the choices a business makes before a single customer walks through the door: whether it offers delivery, how it prices itself, what kind of neighborhood it sits in. These decisions are quiet and easy to overlook, yet they shape the ending.
           </p>
-          <img src="img/open_restaurant.jpg" alt="A busy restaurant kitchen"
-              style="width: 100%; max-width: 560px; aspect-ratio: 21 / 9; object-fit: cover; border-radius: 8px; margin-top: 2rem; display: block;" />
+          <img class="section-image" src="img/open_restaurant.jpg" alt="A busy restaurant kitchen" />
         </section>
 
         <!-- 5a · Does Any of It Help? — paragraph 1 -->
-        <section class="step" data-active-index="5">
+        <section class="step followup-step" data-active-index="5">
           <div class="title">Does Any of It Help?</div>
           <p>
             This is an interactive dashboard. Click through the variables on the left, delivery, price, cuisine, parking, and the survival rate on the right shifts with your choice. We invite you to find out for yourself which decisions actually move the odds and which barely matter at all.
@@ -127,16 +124,10 @@
         </section>
 
         <!-- 6a · Place Matters — paragraph 1 -->
-        <section class="step" data-active-index="6">
+        <section class="step followup-step" data-active-index="6">
           <div class="title">Place Matters</div>
           <p>
             If operational choices matter, what about the economic ground a restaurant stands on? These two maps place neighborhood rent on the left beside restaurant ratings on the right, year by year. We want to see whether survival is shaped not only by the restaurant itself but by the cost of the land beneath it.
-          </p>
-        </section>
-
-        <!-- 6b · Place Matters — paragraph 2 (same viz, index 6) -->
-        <section class="step" data-active-index="6">
-          <p>
             The pattern is uneven. Higher-rent and faster-rising neighborhoods tend to be harder places for independent restaurants to hold on. The same well-reviewed shop that might survive in an affordable area can struggle in a high-rent one. Location is not just a coordinate, it is a recurring bill. Structural disadvantage stacks, layer by layer, on the independents that were already the most exposed.
           </p>
         </section>
@@ -147,12 +138,11 @@
           <p>
             The data has shown us the patterns. Now, carrying those patterns with us, we return to the restaurant we started with and grade its report card, line by line. You decide whether each measure beats the city.
           </p>
-          <img src="img/closed_restaurant.jpg" alt="An empty, closed restaurant"
-              style="width: 100%; max-width: 560px; aspect-ratio: 21 / 9; object-fit: cover; border-radius: 8px; margin-top: 2rem; display: block;" />
+          <img class="section-image" src="img/closed_restaurant.jpg" alt="An empty, closed restaurant" />
         </section>
 
         <!-- 8a · The Report Card — paragraph 1 -->
-        <section class="step" data-active-index="8">
+        <section class="step followup-step" data-active-index="8">
           <div class="title">The Report Card</div>
           <p>
             Garces Trading Company offered delivery when only <span class="data-link" data-row="0">54.5%</span> of restaurants did. It held <span class="data-link" data-row="1">4.0 stars</span> against a city average of 3.58. It drew roughly <span class="data-link" data-row="2">900 reviews</span> when the median restaurant had thirty-three. It had parking, like <span class="data-link" data-row="3">65.3%</span> of the city, and sat at the most common <span class="data-link" data-row="4">price tier</span>. Grade it yourself, see if every box turns green.

@@ -4,6 +4,7 @@
 #opening-spacer {
   height: 330vh;
   width: 100%;
+  margin-bottom: -100vh;
 }
 
 /* Fixed full-screen overlay holding the canvas + title. */

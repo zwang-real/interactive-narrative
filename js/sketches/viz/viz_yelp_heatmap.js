@@ -173,21 +173,19 @@
 
             p.push();
             p.noStroke();
-            p.fill(255);
-            p.rect(left - 22, top - 20, w + 44, h + 116);
 
             p.fill(20);
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
             p.textSize(20);
             p.textAlign(p.CENTER, p.TOP);
-            p.text('number of ratings', left + w / 2, gridTop + gridH + 66);
+            p.text('Number of Ratings', left + w / 2, gridTop + gridH + 66);
 
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
             p.fill('#6d6862');
-            p.text('showing restaurants with fewer than 1k ratings', left + w / 2, gridTop + gridH + 92);
+            p.text('Showing restaurants with fewer than 1k ratings', left + w / 2, gridTop + gridH + 92);
 
             p.push();
             p.translate(left - 50, gridTop + gridH / 2);
@@ -197,7 +195,7 @@
             p.textSize(20);
             p.fill(20);
             p.textAlign(p.CENTER, p.CENTER);
-            p.text('Restaurant rating', 0, 0);
+            p.text('Restaurant Rating', 0, 0);
             p.pop();
 
             p.textFont('IBM Plex Mono');
@@ -221,7 +219,7 @@
             p.textSize(13);
             p.textAlign(p.CENTER, p.TOP);
             p.text(
-                'High ratings and many reviews still appear among closed restaurants.',
+                'High Ratings and Many Reviews Still Appear Among Closed Restaurants.',
                 left + w / 2,
                 top + 32
             );

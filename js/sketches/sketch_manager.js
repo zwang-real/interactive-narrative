@@ -59,7 +59,7 @@ function startP5() {
             };
 
             p.draw = function () {
-                p.background(255);
+                p.clear();
                 self.draw(p);
 
                 var pr = self.state.progress || 0;

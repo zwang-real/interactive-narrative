@@ -15,6 +15,8 @@
         '#D66B6F',
         '#CC79A7'
     ];
+    var MAP_TITLE_SIZE = 22;
+    var MAP_LABEL_SIZE = 15;
     var FOCUS_ZIPS = ['19104', '19130', '19103', '19102', '19123', '19107', '19106', '19146', '19147', '19132', '19133', '19125', '19121', '19122'];
     var FOCUS_ZIP_SET = FOCUS_ZIPS.reduce(function (set, zip) {
         set[zip] = true;
@@ -212,13 +214,13 @@
         p.textAlign(p.LEFT, p.TOP);
         p.textFont('IBM Plex Mono');
         p.textStyle(p.BOLD);
-        p.textSize(11);
+        p.textSize(MAP_LABEL_SIZE);
         p.text(headerText, x, y);
 
         p.textStyle(p.NORMAL);
-        p.textSize(11);
+        p.textSize(MAP_LABEL_SIZE);
         p.fill('#4f4a45');
-        p.text(detailText, x, y + 20, maxWidth, 28);
+        p.text(detailText, x, y + 30, maxWidth, 48);
     }
 
     function buildSharedYears(housingData, yelpData) {
@@ -415,7 +417,7 @@
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
             var sliderW = Math.min(360, w * 0.55);
             var sliderX = left + w / 2 - sliderW / 2;
-            var sliderY = top + h - 10;
+            var sliderY = top + h + 16;
             var knobRadius = 10;
             var slider = { x: sliderX, y: sliderY, w: sliderW, progress: progress, knobRadius: knobRadius };
 
@@ -428,7 +430,7 @@
             p.textAlign(p.CENTER, p.CENTER);
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
-            p.textSize(13);
+            p.textSize(MAP_LABEL_SIZE);
             p.fill(45);
             p.text(String(selectedYear), sliderX + sliderW / 2, sliderY - 24);
 
@@ -458,7 +460,7 @@
 
             p.fill('#5b5550');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(MAP_LABEL_SIZE);
             p.textAlign(p.LEFT, p.TOP);
             p.text(String(minYear), sliderX, sliderY + 12);
             p.textAlign(p.RIGHT, p.TOP);
@@ -468,7 +470,7 @@
             p.textAlign(p.CENTER, p.TOP);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(MAP_LABEL_SIZE);
             p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 24);
         },
 
@@ -482,7 +484,7 @@
             p.fill(30);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(MAP_LABEL_SIZE);
             p.textAlign(p.LEFT, p.BOTTOM);
             p.text(title, legendX, legendY - 4);
 
@@ -495,7 +497,7 @@
 
             p.fill('#4f4a45');
             p.textStyle(p.NORMAL);
-            p.textSize(10);
+            p.textSize(MAP_LABEL_SIZE);
             p.textAlign(p.LEFT, p.TOP);
             p.text(rangeLabelLeft, legendX, legendY + 10);
             p.textAlign(p.RIGHT, p.TOP);
@@ -535,7 +537,7 @@
             p.textAlign(p.CENTER, p.TOP);
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
-            p.textSize(16);
+            p.textSize(MAP_TITLE_SIZE);
             p.text(config.title, panel.x + panel.w / 2, panel.y + 14);
 
             projectedFeatures.forEach(function (feature) {
@@ -566,14 +568,14 @@
                 p.textFont('IBM Plex Mono');
                 p.textStyle(p.BOLD);
                 p.textAlign(p.CENTER, p.CENTER);
-                p.textSize(fontSize + 1);
+                p.textSize(MAP_LABEL_SIZE);
                 p.text(feature.zip, feature.labelX, feature.labelY);
             });
 
             var selectedMetric = selectedZip ? config.values[selectedZip] : null;
             var headerText = selectedZip ? 'ZIP ' + selectedZip : config.defaultHeader;
             var detailText = selectedMetric ? config.hoverDetail(selectedMetric) : config.defaultDetail;
-            drawInfoBlock(p, panel.x + 20, panel.mapY + panel.mapH + 12, headerText, detailText, panel.w - 40);
+            drawInfoBlock(p, panel.x + 20, panel.mapY + panel.mapH + 20, headerText, detailText, panel.w - 40);
 
             return selectedMetric;
         },
@@ -603,7 +605,7 @@
             var h = (manager.height || 520) - 22;
             var gap = 16;
             var panelW = (w - gap) / 2;
-            var panelH = h - 110;
+            var panelH = h - 145;
             var leftPanel = {
                 x: left,
                 y: top,
@@ -612,7 +614,7 @@
                 mapX: left + 10,
                 mapY: top + 46,
                 mapW: panelW - 20,
-                mapH: panelH - 92
+                mapH: panelH - 112
             };
             var rightPanel = {
                 x: left + panelW + gap,
@@ -622,7 +624,7 @@
                 mapX: left + panelW + gap + 10,
                 mapY: top + 46,
                 mapW: panelW - 20,
-                mapH: panelH - 92
+                mapH: panelH - 112
             };
             var hoveredZip =
                 this.getHoveredZipForPanel(p, leftPanel, focusedGeoData) ||
@@ -672,13 +674,13 @@
             p.textAlign(p.CENTER, p.TOP);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(MAP_LABEL_SIZE);
             p.text('Hover over any ZIP code area to compare its rent and restaurant rating.', left + w / 2, top + 42);
 
             this.drawLegendBlock(
                 p,
                 leftPanel.x + 20,
-                leftPanel.y + leftPanel.h + 18,
+                leftPanel.y + leftPanel.h + 50,
                 leftPanel.w - 40,
                 'Rent prices',
                 formatCurrency(focusedHousingRange.minValue),
@@ -689,7 +691,7 @@
             this.drawLegendBlock(
                 p,
                 rightPanel.x + 20,
-                rightPanel.y + rightPanel.h + 18,
+                rightPanel.y + rightPanel.h + 50,
                 rightPanel.w - 40,
                 'Restaurant ratings',
                 focusedRatingRange.minValue.toFixed(1),

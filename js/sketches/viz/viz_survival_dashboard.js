@@ -9,6 +9,9 @@
     var COL_TEXT   = '#1a1a18';
     var COL_MUTED  = '#5f5e5a';
     var COL_BORDER = '#e6e2dc';
+    var FONT_TITLE = 22;
+    var FONT_LABEL = 15;
+    var FONT_SMALL = 13;
 
     var VARIABLES = [
         { key: 'delivery',    label: 'Delivery'  },
@@ -35,11 +38,11 @@
         var W = manager.width  || p.width;
         var H = manager.height || p.height;
 
-        var panelW = 110;
+        var panelW = 142;
         var panelX = (manager.offsetX || 0) + 16;
         var panelY = (manager.offsetY || 0) + 52;
-        var btnH   = 34;
-        var btnGap = 8;
+        var btnH   = 42;
+        var btnGap = 10;
 
         buttons = VARIABLES.map(function (v, i) {
             return {
@@ -91,7 +94,7 @@
             if (active) { p.fill(COL_HIGH); p.rect(btn.x, btn.y, 3, btn.h, 3); }
             p.fill(active ? COL_TEXT : COL_MUTED);
             p.textFont('IBM Plex Mono');
-            p.textSize(12);
+            p.textSize(FONT_LABEL);
             p.textAlign(p.LEFT, p.CENTER);
             p.noStroke();
             p.text(btn.label, btn.x + 14, btn.y + btn.h / 2);
@@ -112,7 +115,7 @@
         p.noStroke();
         p.fill(COL_MUTED);
         p.textFont('IBM Plex Mono');
-        p.textSize(10);
+        p.textSize(FONT_SMALL);
         p.textAlign(p.LEFT, p.CENTER);
         p.text('50%', bars[bars.length-1].x + bars[bars.length-1].w + 10, refY);
 
@@ -134,7 +137,7 @@
                 p.rotate(p.PI / 4);   // +45 degrees (toward right)
                 p.fill(COL_MUTED);
                 p.textFont('IBM Plex Mono');
-                p.textSize(10);
+                p.textSize(FONT_SMALL);
                 p.textAlign(p.LEFT, p.CENTER);
                 p.noStroke();
                 // show full label — angled so it fits diagonally
@@ -145,13 +148,13 @@
                 // Normal: percentage above, horizontal label below
                 p.fill(COL_TEXT);
                 p.textFont('IBM Plex Mono');
-                p.textSize(bar.w >= 30 ? 11 : 9);
+                p.textSize(FONT_LABEL);
                 p.textAlign(p.CENTER, p.BOTTOM);
                 p.noStroke();
                 p.text(pct(bar.rate), bar.x + bar.w / 2, barTop - 2);
 
                 p.fill(COL_MUTED);
-                p.textSize(10);
+                p.textSize(FONT_SMALL);
                 p.textAlign(p.CENTER, p.TOP);
                 var labelLines = wrapLabel(bar.label, 10);
                 labelLines.forEach(function (line, li) {
@@ -195,11 +198,11 @@
         p.rect(tx - tw / 2, ty - th, tw, th, 4);
         p.fill(255);
         p.textFont('IBM Plex Mono');
-        p.textSize(11);
+        p.textSize(FONT_SMALL);
         p.textAlign(p.CENTER, p.CENTER);
         p.text(bar.label + ': ' + pct(bar.rate), tx, ty - th * 0.65);
         p.fill(180);
-        p.textSize(10);
+        p.textSize(FONT_SMALL);
         p.text('n = ' + bar.count.toLocaleString(), tx, ty - th * 0.25);
     }
 
@@ -209,12 +212,12 @@
         p.noStroke();
         p.fill(COL_TEXT);
         p.textFont('Spectral');
-        p.textSize(15);
+        p.textSize(FONT_TITLE);
         p.textAlign(p.LEFT, p.TOP);
         p.text('Survival Rate by ' + (labels[activeVar] || activeVar), oX + 16, oY + 16);
         p.fill(COL_MUTED);
         p.textFont('IBM Plex Mono');
-        p.textSize(10);
+        p.textSize(FONT_SMALL);
         p.text('Philadelphia restaurants \u00b7 Yelp dataset through Jan 2022', oX + 16, oY + 36);
     }
 
@@ -223,7 +226,7 @@
         var lx = oX + 16, ly = oY + (manager.height || p.height) - 22;
         p.noStroke();
         p.fill(COL_HIGH); p.rect(lx, ly, 10, 10, 2);
-        p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(10); p.textAlign(p.LEFT, p.CENTER);
+        p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(FONT_SMALL); p.textAlign(p.LEFT, p.CENTER);
         p.text('\u2265 50% survival', lx + 14, ly + 5);
         p.fill(COL_LOW); p.rect(lx + 112, ly, 10, 10, 2);
         p.fill(COL_MUTED); p.text('< 50% survival', lx + 126, ly + 5);
