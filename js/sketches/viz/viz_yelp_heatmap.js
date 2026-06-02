@@ -1,9 +1,10 @@
-// Yelp restaurant review-count vs rating heatmap.
+// Yelp restaurant review-count vs rating heatmap, with yearly playback.
 (function () {
     var REVIEW_BINS = [0, 100, 250, 500, 750, 1000];
     var RATING_BINS = [1.0, 2.0, 3.0, 3.5, 4.0, 4.5, 5.01];
     var CLOSED_HEX = '#7e2954';
     var OPEN_HEX = '#94cbec';
+    var CONTROL_TEXT = '#4f4a45';
 
     function formatCompactNumber(value) {
         if (value >= 1000) {
@@ -45,81 +46,403 @@
         return RATING_BINS[index].toFixed(1) + '-' + displayEnd.toFixed(1);
     }
 
+    function emptyMatrix() {
+        var matrix = [];
+        for (var r = 0; r < RATING_BINS.length - 1; r++) {
+            matrix[r] = [];
+            for (var c = 0; c < REVIEW_BINS.length - 1; c++) {
+                matrix[r][c] = { open: 0, closed: 0 };
+            }
+        }
+        return matrix;
+    }
+
+    function readUInt16(view, offset) {
+        return view.getUint16(offset, true);
+    }
+
+    function readUInt32(view, offset) {
+        return view.getUint32(offset, true);
+    }
+
+    function findEOCD(view) {
+        var start = Math.max(0, view.byteLength - 66000);
+        for (var i = view.byteLength - 22; i >= start; i--) {
+            if (readUInt32(view, i) === 0x06054b50) return i;
+        }
+        return -1;
+    }
+
+    function textFromBytes(bytes) {
+        return new TextDecoder('utf-8').decode(bytes);
+    }
+
+    function inflateZipEntry(bytes, method) {
+        if (method === 0) return Promise.resolve(bytes);
+        if (method !== 8 || typeof DecompressionStream === 'undefined') {
+            return Promise.reject(new Error('Unsupported ZIP compression'));
+        }
+
+        var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream('deflate-raw'));
+        return new Response(stream).arrayBuffer().then(function (buffer) {
+            return new Uint8Array(buffer);
+        });
+    }
+
+    function extractReviewJSON(zipBuffer) {
+        if (!zipBuffer) return Promise.resolve([]);
+
+        var view = new DataView(zipBuffer);
+        var eocd = findEOCD(view);
+        if (eocd < 0) return Promise.resolve([]);
+
+        var totalEntries = readUInt16(view, eocd + 10);
+        var centralDirOffset = readUInt32(view, eocd + 16);
+        var ptr = centralDirOffset;
+        var target = null;
+
+        for (var i = 0; i < totalEntries; i++) {
+            if (readUInt32(view, ptr) !== 0x02014b50) break;
+            var method = readUInt16(view, ptr + 10);
+            var compressedSize = readUInt32(view, ptr + 20);
+            var fileNameLength = readUInt16(view, ptr + 28);
+            var extraLength = readUInt16(view, ptr + 30);
+            var commentLength = readUInt16(view, ptr + 32);
+            var localHeaderOffset = readUInt32(view, ptr + 42);
+            var nameBytes = new Uint8Array(zipBuffer, ptr + 46, fileNameLength);
+            var fileName = textFromBytes(nameBytes);
+
+            if (fileName === 'yelp_reviews_philadelphia_zips.json') {
+                target = {
+                    method: method,
+                    compressedSize: compressedSize,
+                    localHeaderOffset: localHeaderOffset
+                };
+                break;
+            }
+            ptr += 46 + fileNameLength + extraLength + commentLength;
+        }
+
+        if (!target) return Promise.resolve([]);
+        var local = target.localHeaderOffset;
+        if (readUInt32(view, local) !== 0x04034b50) return Promise.resolve([]);
+        var localNameLength = readUInt16(view, local + 26);
+        var localExtraLength = readUInt16(view, local + 28);
+        var dataStart = local + 30 + localNameLength + localExtraLength;
+        var entryBytes = new Uint8Array(zipBuffer, dataStart, target.compressedSize);
+
+        return inflateZipEntry(entryBytes, target.method)
+            .then(function (jsonBytes) {
+                return JSON.parse(textFromBytes(jsonBytes));
+            })
+            .catch(function () {
+                return [];
+            });
+    }
+
+    function binIndex(value, bins, includeLast) {
+        for (var i = 0; i < bins.length - 1; i++) {
+            if (value >= bins[i] && value < bins[i + 1]) return i;
+        }
+        if (includeLast && value === bins[bins.length - 2]) return bins.length - 2;
+        return -1;
+    }
+
+    function summarizeMatrix(matrix) {
+        var maxOpenCount = 0;
+        var maxClosedCount = 0;
+        var totalOpen = 0;
+        var totalClosed = 0;
+
+        matrix.forEach(function (row) {
+            row.forEach(function (cell) {
+                if (cell.open > maxOpenCount) maxOpenCount = cell.open;
+                if (cell.closed > maxClosedCount) maxClosedCount = cell.closed;
+                totalOpen += cell.open;
+                totalClosed += cell.closed;
+            });
+        });
+
+        return {
+            matrix: matrix,
+            maxOpenCount: maxOpenCount,
+            maxClosedCount: maxClosedCount,
+            maxCount: Math.max(maxOpenCount, maxClosedCount),
+            totalOpen: totalOpen,
+            totalClosed: totalClosed,
+            total: totalOpen + totalClosed
+        };
+    }
+
+    function pointInRect(px, py, rect) {
+        return px >= rect.x && px <= rect.x + rect.w && py >= rect.y && py <= rect.y + rect.h;
+    }
+
+    function getSelectedYear(manager, years) {
+        if (!years || !years.length) return null;
+        var selectedYear = +manager.yelpHeatmapSelectedYear || years[years.length - 1];
+        if (years.indexOf(selectedYear) === -1) {
+            selectedYear = years[years.length - 1];
+            manager.yelpHeatmapSelectedYear = selectedYear;
+        }
+        return selectedYear;
+    }
+
+    function setSelectedYear(manager, years, year) {
+        if (!years || !years.length) return;
+        var index = years.indexOf(year);
+        if (index === -1) index = years.length - 1;
+        manager.yelpHeatmapSelectedYear = years[index];
+    }
+
     window.VizYelpHeatmap = {
         prepareData: function (rows) {
             rows = rows || [];
-            var matrix = [];
-            var maxOpenCount = 0;
-            var maxClosedCount = 0;
-            var total = 0;
-            var totalOpen = 0;
-            var totalClosed = 0;
-
-            for (var r = 0; r < RATING_BINS.length - 1; r++) {
-                matrix[r] = [];
-                for (var c = 0; c < REVIEW_BINS.length - 1; c++) {
-                    matrix[r][c] = { open: 0, closed: 0 };
-                }
-            }
+            var matrix = emptyMatrix();
 
             rows.forEach(function (row) {
                 var rating = +row.stars || 0;
                 var reviewCount = +row.review_count || 0;
                 if (rating < RATING_BINS[0] || rating > 5 || reviewCount < 0) return;
 
-                var rowIndex = -1;
-                var colIndex = -1;
-                for (var r = 0; r < RATING_BINS.length - 1; r++) {
-                    if (rating >= RATING_BINS[r] && rating < RATING_BINS[r + 1]) {
-                        rowIndex = r;
-                        break;
-                    }
-                }
-                for (var c = 0; c < REVIEW_BINS.length - 1; c++) {
-                    if (reviewCount >= REVIEW_BINS[c] && reviewCount < REVIEW_BINS[c + 1]) {
-                        colIndex = c;
-                        break;
-                    }
-                }
-
-                if (rowIndex === -1 && rating === 5) rowIndex = RATING_BINS.length - 2;
+                var rowIndex = binIndex(rating, RATING_BINS, true);
+                var colIndex = binIndex(reviewCount, REVIEW_BINS, false);
                 if (rowIndex === -1 || colIndex === -1) return;
 
                 if (+row.is_open === 1) {
                     matrix[rowIndex][colIndex].open += 1;
-                    totalOpen += 1;
                 } else {
                     matrix[rowIndex][colIndex].closed += 1;
-                    totalClosed += 1;
                 }
-                total += 1;
-                if (matrix[rowIndex][colIndex].open > maxOpenCount) maxOpenCount = matrix[rowIndex][colIndex].open;
-                if (matrix[rowIndex][colIndex].closed > maxClosedCount) maxClosedCount = matrix[rowIndex][colIndex].closed;
             });
 
-            return {
-                matrix: matrix,
-                maxOpenCount: maxOpenCount,
-                maxClosedCount: maxClosedCount,
-                maxCount: Math.max(maxOpenCount, maxClosedCount),
-                total: total,
-                totalOpen: totalOpen,
-                totalClosed: totalClosed
+            return summarizeMatrix(matrix);
+        },
+
+        prepareYearData: function (businessRows, zipBuffer) {
+            var businesses = businessRows || [];
+            var metaById = {};
+            businesses.forEach(function (business) {
+                if (!business.business_id) return;
+                metaById[business.business_id] = { isOpen: +business.is_open === 1 };
+            });
+
+            return extractReviewJSON(zipBuffer).then(function (reviews) {
+                var byBusiness = {};
+                var yearSet = {};
+
+                reviews.forEach(function (review) {
+                    var meta = metaById[review.business_id];
+                    if (!meta) return;
+                    var year = +String(review.date || '').slice(0, 4);
+                    var stars = +review.stars;
+                    if (!year || !isFinite(stars)) return;
+
+                    if (!byBusiness[review.business_id]) byBusiness[review.business_id] = [];
+                    byBusiness[review.business_id].push({ year: year, stars: stars });
+                    yearSet[year] = true;
+                });
+
+                var years = Object.keys(yearSet).map(function (year) { return +year; }).sort(function (a, b) { return a - b; });
+                if (!years.length) return null;
+
+                var byYear = {};
+                years.forEach(function (year) {
+                    byYear[year] = {
+                        year: year,
+                        matrix: emptyMatrix()
+                    };
+                });
+
+                Object.keys(byBusiness).forEach(function (businessId) {
+                    var reviewsForBusiness = byBusiness[businessId].sort(function (a, b) { return a.year - b.year; });
+                    var meta = metaById[businessId];
+                    var sum = 0;
+                    var count = 0;
+                    var reviewIndex = 0;
+
+                    years.forEach(function (year) {
+                        while (reviewIndex < reviewsForBusiness.length && reviewsForBusiness[reviewIndex].year <= year) {
+                            sum += reviewsForBusiness[reviewIndex].stars;
+                            count += 1;
+                            reviewIndex += 1;
+                        }
+                        if (count <= 0) return;
+
+                        var ratingIndex = binIndex(sum / count, RATING_BINS, true);
+                        var reviewIndexBin = binIndex(count, REVIEW_BINS, false);
+                        if (ratingIndex === -1 || reviewIndexBin === -1) return;
+                        byYear[year].matrix[ratingIndex][reviewIndexBin][meta.isOpen ? 'open' : 'closed'] += 1;
+                    });
+                });
+
+                years.forEach(function (year) {
+                    byYear[year] = Object.assign({ year: year }, summarizeMatrix(byYear[year].matrix));
+                });
+
+                return {
+                    years: years,
+                    byYear: byYear
+                };
+            });
+        },
+
+        handleControls: function (p, manager, years, slider, buttons) {
+            if (!years.length) return;
+
+            var wasPressed = !!manager.yelpHeatmapMouseWasPressed;
+            var justPressed = p.mouseIsPressed && !wasPressed;
+            var justReleased = !p.mouseIsPressed && wasPressed;
+
+            if (justReleased) manager.yelpHeatmapSliderDragging = false;
+
+            var selectedYear = getSelectedYear(manager, years);
+            var selectedIndex = Math.max(0, years.indexOf(selectedYear));
+            var progress = years.length > 1 ? selectedIndex / (years.length - 1) : 1;
+            var knobX = slider.x + slider.w * progress;
+            var onTrack = p.mouseX >= slider.x - 10 && p.mouseX <= slider.x + slider.w + 10 &&
+                p.mouseY >= slider.y - 13 && p.mouseY <= slider.y + 13;
+            var onKnob = p.dist(p.mouseX, p.mouseY, knobX, slider.y) <= slider.knobRadius + 5;
+
+            if (justPressed) {
+                if (pointInRect(p.mouseX, p.mouseY, buttons.play)) {
+                    manager.yelpHeatmapAutoplay = !manager.yelpHeatmapAutoplay;
+                    manager.yelpHeatmapLastAdvance = p.millis();
+                } else if (pointInRect(p.mouseX, p.mouseY, buttons.slow)) {
+                    manager.yelpHeatmapSpeed = 'slow';
+                    manager.yelpHeatmapAutoplay = true;
+                    manager.yelpHeatmapLastAdvance = p.millis();
+                } else if (pointInRect(p.mouseX, p.mouseY, buttons.fast)) {
+                    manager.yelpHeatmapSpeed = 'fast';
+                    manager.yelpHeatmapAutoplay = true;
+                    manager.yelpHeatmapLastAdvance = p.millis();
+                } else if (onTrack || onKnob) {
+                    manager.yelpHeatmapSliderDragging = true;
+                    manager.yelpHeatmapAutoplay = false;
+                }
+            }
+
+            if (manager.yelpHeatmapSliderDragging && p.mouseIsPressed) {
+                var t = (p.mouseX - slider.x) / slider.w;
+                t = Math.max(0, Math.min(1, t));
+                setSelectedYear(manager, years, years[Math.round(t * (years.length - 1))]);
+            }
+
+            if (manager.yelpHeatmapAutoplay && !manager.yelpHeatmapSliderDragging) {
+                var speed = manager.yelpHeatmapSpeed === 'fast' ? 250 : 600;
+                var last = manager.yelpHeatmapLastAdvance || p.millis();
+                if (p.millis() - last >= speed) {
+                    selectedYear = getSelectedYear(manager, years);
+                    selectedIndex = Math.max(0, years.indexOf(selectedYear));
+                    manager.yelpHeatmapSelectedYear = years[(selectedIndex + 1) % years.length];
+                    manager.yelpHeatmapLastAdvance = p.millis();
+                }
+            }
+
+            manager.yelpHeatmapMouseWasPressed = p.mouseIsPressed;
+        },
+
+        drawControls: function (p, manager, years, selectedYear, left, y, w) {
+            if (!years.length) return;
+            if (!manager.yelpHeatmapSpeed) manager.yelpHeatmapSpeed = 'slow';
+
+            var sliderW = Math.min(360, w * 0.5);
+            var buttonW = 58;
+            var gap = 10;
+            var totalW = sliderW + gap * 3 + buttonW * 3;
+            var startX = left + w / 2 - totalW / 2;
+            var slider = {
+                x: startX,
+                y: y,
+                w: sliderW,
+                knobRadius: 10
             };
+            var buttons = {
+                play: { x: startX + sliderW + gap, y: y - 15, w: buttonW, h: 30 },
+                slow: { x: startX + sliderW + gap * 2 + buttonW, y: y - 15, w: buttonW, h: 30 },
+                fast: { x: startX + sliderW + gap * 3 + buttonW * 2, y: y - 15, w: buttonW, h: 30 }
+            };
+
+            this.handleControls(p, manager, years, slider, buttons);
+            selectedYear = getSelectedYear(manager, years);
+            var index = Math.max(0, years.indexOf(selectedYear));
+            var progress = years.length > 1 ? index / (years.length - 1) : 1;
+
+            p.textFont('Spectral');
+            p.textStyle(p.BOLD);
+            p.textSize(16);
+            p.fill('#1e1b18');
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text(String(selectedYear), slider.x + slider.w / 2, slider.y - 25);
+
+            p.stroke('#d0d9de');
+            p.strokeWeight(6);
+            p.line(slider.x, slider.y, slider.x + slider.w, slider.y);
+            p.stroke(CLOSED_HEX);
+            p.line(slider.x, slider.y, slider.x + slider.w * progress, slider.y);
+
+            for (var tickIndex = 0; tickIndex < years.length; tickIndex++) {
+                var tickT = years.length > 1 ? tickIndex / (years.length - 1) : 0;
+                var tickX = slider.x + slider.w * tickT;
+                p.stroke(tickIndex === index ? CLOSED_HEX : '#b9c5cc');
+                p.strokeWeight(tickIndex === index ? 2 : 1);
+                p.line(tickX, slider.y + 9, tickX, slider.y + 16);
+            }
+
+            var knobX = slider.x + slider.w * progress;
+            p.noStroke();
+            p.fill(CLOSED_HEX);
+            p.circle(knobX, slider.y, slider.knobRadius * 2);
+            p.fill('#ffffff');
+            p.circle(knobX, slider.y, slider.knobRadius);
+
+            p.fill(CONTROL_TEXT);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(11);
+            p.textAlign(p.LEFT, p.TOP);
+            p.text(String(years[0]), slider.x, slider.y + 17);
+            p.textAlign(p.RIGHT, p.TOP);
+            p.text(String(years[years.length - 1]), slider.x + slider.w, slider.y + 17);
+
+            this.drawButton(p, buttons.play, manager.yelpHeatmapAutoplay ? 'Pause' : 'Play', false);
+            this.drawButton(p, buttons.slow, 'Slow', manager.yelpHeatmapSpeed !== 'fast');
+            this.drawButton(p, buttons.fast, 'Fast', manager.yelpHeatmapSpeed === 'fast');
+
+            p.fill(CONTROL_TEXT);
+            p.textAlign(p.CENTER, p.TOP);
+            p.text('Drag the slider to change year, or autoplay through the review history.', left + w / 2, slider.y + 34);
+        },
+
+        drawButton: function (p, rect, label, active) {
+            p.noStroke();
+            p.fill(active ? '#1e1b18' : '#f1eee8');
+            p.rect(rect.x, rect.y, rect.w, rect.h, 6);
+            p.fill(active ? '#ffffff' : '#1e1b18');
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.BOLD);
+            p.textSize(11);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text(label, rect.x + rect.w / 2, rect.y + rect.h / 2);
         },
 
         draw: function (p, manager) {
-            var data = manager.yelpHeatmapData || this.prepareData([]);
+            var yearData = manager.yelpHeatmapYearData;
+            var years = yearData && yearData.years ? yearData.years : [];
+            var selectedYear = getSelectedYear(manager, years);
+            var data = selectedYear && yearData.byYear ? yearData.byYear[selectedYear] : null;
+            if (!data) data = manager.yelpHeatmapData || this.prepareData([]);
+
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 18;
             var w = (manager.width || 600) + 2;
-            var h = (manager.height || 520) - 70;
+            var h = (manager.height || 520) - 92;
             var gutter = 44;
             var panelW = (w - gutter) / 2;
             var gridLeft = left + 86;
             var gridTop = top + 62;
             var gridW = panelW - 96;
-            var gridH = h - 170;
+            var gridH = h - 150;
             var cols = REVIEW_BINS.length - 1;
             var rows = RATING_BINS.length - 1;
             var cellW = gridW / cols;
@@ -138,7 +461,7 @@
                 p.textFont('IBM Plex Mono');
                 p.textStyle(p.NORMAL);
                 p.textSize(12);
-                p.fill('#4f4a45');
+                p.fill(CONTROL_TEXT);
 
                 for (var c = 0; c < cols; c++) {
                     var x = panelLeft + c * cellW;
@@ -185,7 +508,8 @@
             p.textStyle(p.NORMAL);
             p.textSize(11);
             p.fill('#6d6862');
-            p.text('Showing restaurants with fewer than 1k ratings', left + w / 2, gridTop + gridH + 92);
+            var scopeLabel = selectedYear ? 'Cumulative reviews through ' + selectedYear + '; restaurants with fewer than 1k ratings' : 'Showing restaurants with fewer than 1k ratings';
+            p.text(scopeLabel, left + w / 2, gridTop + gridH + 92);
 
             p.push();
             p.translate(left - 50, gridTop + gridH / 2);
@@ -201,7 +525,7 @@
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(13);
-            p.fill('#4f4a45');
+            p.fill(CONTROL_TEXT);
 
             for (var r = 0; r < rows; r++) {
                 var y = gridTop + r * cellH;
@@ -218,20 +542,16 @@
             p.textStyle(p.BOLD);
             p.textSize(13);
             p.textAlign(p.CENTER, p.TOP);
-            p.text(
-                'High Ratings and Many Reviews Still Appear Among Closed Restaurants.',
-                left + w / 2,
-                top + 32
-            );
+            p.text('High Ratings and Many Reviews Still Appear Among Closed Restaurants.', left + w / 2, top + 32);
 
             var legendX = left + w / 2 - 92;
-            var legendY = top + h + 8;
+            var legendY = top + h - 2;
             p.noStroke();
             p.fill(OPEN_HEX);
             p.circle(legendX, legendY + 5, 9);
             p.fill(CLOSED_HEX);
             p.circle(legendX + 100, legendY + 5, 9);
-            p.fill('#4f4a45');
+            p.fill(CONTROL_TEXT);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
@@ -243,6 +563,11 @@
             p.textSize(12);
             p.fill(70);
             p.text('Open: ' + data.totalOpen + '  |  Closed: ' + data.totalClosed, left + w, legendY + 5);
+
+            if (years.length) {
+                this.drawControls(p, manager, years, selectedYear, left, top + h + 32, w);
+            }
+
             p.pop();
         }
     };

@@ -5,8 +5,8 @@
 // Index map (keep in sync with index.html data-active-index):
 //   0  Intro            full-text, no viz
 //   1  Part 1 title     full-text, no viz
-//   2  Image 1 Map      (not built yet — placeholder)
-//   3  Image 2 Scatter  VizYelpReviews
+//   2  Image 1 Map      VizWhereTheyStand
+//   3  Image 2 Heatmap  VizYelpHeatmap
 //   4  Part 2 title     full-text, no viz
 //   5  Image 3 Dashboard VizSurvivalDashboard
 //   6  Image 4 Housing  VizHousingMap
@@ -34,17 +34,21 @@
             var yelpYearSummaryRequest = fetch('data/yelp_filtered/yelp_zip_year_summary.json')
                 .then(function (r) { return r.ok ? r.json() : null; })
                 .catch(function () { return null; });
+            var yelpReviewsZipRequest = fetch('data/yelp_filtered/yelp_reviews_philadelphia_zips.zip')
+                .then(function (r) { return r.ok ? r.arrayBuffer() : null; })
+                .catch(function () { return null; });
             var survivalDataRequest = fetch('data/yelp_filtered/image3_survival_by_variable.json')
                 .then(function (r) { return r.ok ? r.json() : null; })
                 .catch(function () { return null; });
 
-            return Promise.all([yelpDataRequest, housingDataRequest, housingGeoRequest, yelpYearSummaryRequest, survivalDataRequest])
+            return Promise.all([yelpDataRequest, housingDataRequest, housingGeoRequest, yelpYearSummaryRequest, yelpReviewsZipRequest, survivalDataRequest])
                 .then(function (results) {
                     var yelpData        = results[0];
                     var housingData     = results[1];
                     var housingGeo      = results[2];
                     var yelpYearSummary = results[3];
-                    var survivalData    = results[4];
+                    var yelpReviewsZip  = results[4];
+                    var survivalData    = results[5];
                     computeLayout(yelpData);
                     manager.yelpReviewData        = window.VizYelpReviews.prepareData(yelpData);
                     manager.whereTheyStandData    = window.VizWhereTheyStand.prepareData(yelpData);
@@ -53,6 +57,12 @@
                     manager.yelpZipYearData       = window.VizZipCompare.prepareYelpData(yelpYearSummary);
                     manager.survivalDashboardData = window.VizSurvivalDashboard.prepareData(survivalData);
                     manager.yelpHeatmapData = window.VizYelpHeatmap.prepareData(yelpData);
+                    if (window.VizYelpHeatmap.prepareYearData) {
+                        return window.VizYelpHeatmap.prepareYearData(yelpData, yelpReviewsZip).then(function (yearData) {
+                            manager.yelpHeatmapYearData = yearData;
+                            return manager.data;
+                        });
+                    }
                     return manager.data;
                 })
                 .catch(function () {
@@ -69,7 +79,11 @@
         },
 
         draw: function (p, manager, ai, progress) {
-            // Where They Stand is a full-text section.
+            // Image 1 — same restaurant survival map language as the opening.
+            if (ai === 2) {
+                window.VizWhereTheyStand.draw(p, manager, ai, progress);
+                return;
+            }
             // Image 2 — Heatmap: reviews vs ratings, open vs closed
             if (ai === 3) {
                 window.VizYelpHeatmap.draw(p, manager);

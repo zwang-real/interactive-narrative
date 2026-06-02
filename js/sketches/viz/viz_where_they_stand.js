@@ -1,8 +1,9 @@
 // Image 1: restaurant rating and survival map for the "Where They Stand" section.
 (function () {
+    var OPEN_HEX = '#7eb0cd';
     var LOW_RATING_HEX = '#94CBEC';
     var HIGH_RATING_HEX = '#0072B2';
-    var CLOSED_HEX = '#E31A1C';
+    var CLOSED_HEX = '#b24852';
     var PANEL_STROKE = '#4f4a45';
     var DEFAULT_YEARS = [];
 
@@ -271,7 +272,7 @@
                 var index = Math.round(Math.max(0, Math.min(1, t)) * (years.length - 1));
                 manager.whereTheyStandSelectedYear = years[index];
                 manager.whereTheyStandPlaying = false;
-            } else if (manager.whereTheyStandPlaying && p.frameCount % (manager.whereTheyStandSpeed === 'fast' ? 6 : 12) === 0) {
+            } else if (manager.whereTheyStandPlaying && p.frameCount % (manager.whereTheyStandSpeed === 'fast' ? 3 : 6) === 0) {
                 var selectedYear = this.getSelectedYear(manager, years);
                 var currentIndex = Math.max(0, years.indexOf(selectedYear));
                 manager.whereTheyStandSelectedYear = years[(currentIndex + 1) % years.length];
@@ -428,17 +429,12 @@
                 var pointSize = zipMetric
                     ? p.map(Math.sqrt(currentReviews), 1, 120, 3.4, 8.6, true)
                     : 2.9;
-                var color = zipMetric ? ratingColor(p, currentRating) : p.color('#d8dde1');
-                var alpha = zipMetric ? (point.isOpen ? 150 : 130) : 46;
+                var color = point.isOpen ? p.color(OPEN_HEX) : p.color(CLOSED_HEX);
+                var alpha = zipMetric ? (point.isOpen ? 156 : 190) : 54;
 
                 p.noStroke();
                 p.fill(p.red(color), p.green(color), p.blue(color), alpha);
                 p.circle(xy.x, xy.y, pointSize);
-
-                if (!point.isOpen) {
-                    p.fill(CLOSED_HEX);
-                    p.circle(xy.x, xy.y, Math.max(3.2, pointSize * 0.62));
-                }
 
                 if (p.dist(p.mouseX, p.mouseY, xy.x, xy.y) <= Math.max(6, pointSize)) {
                     hovered = { point: point, x: xy.x, y: xy.y };
@@ -525,36 +521,19 @@
         },
 
         drawLegend: function (p, x, y) {
-            var legendW = 104;
-            var steps = 30;
-
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(10);
-            p.textAlign(p.CENTER, p.BOTTOM);
-            p.noStroke();
-            p.fill('#4f4a45');
-            p.text('rating', x + legendW / 2, y - 6);
-
-            for (var i = 0; i < steps; i++) {
-                var t = i / (steps - 1);
-                p.fill(p.lerpColor(p.color(LOW_RATING_HEX), p.color(HIGH_RATING_HEX), t));
-                p.rect(x + t * legendW, y, legendW / steps + 1, 8);
-            }
-
-            p.fill('#4f4a45');
-            p.textSize(9);
-            p.textAlign(p.LEFT, p.TOP);
-            p.text('1.0', x, y + 11);
-            p.textAlign(p.RIGHT, p.TOP);
-            p.text('5.0', x + legendW, y + 11);
-
-            p.noStroke();
-            p.fill(CLOSED_HEX);
-            p.circle(x + legendW + 42, y + 4, 7);
-            p.fill('#4f4a45');
+            p.textSize(11);
             p.textAlign(p.LEFT, p.CENTER);
-            p.text('Closed', x + legendW + 54, y + 4);
+            p.noStroke();
+            p.fill(OPEN_HEX);
+            p.circle(x, y, 8);
+            p.fill('#4f4a45');
+            p.text('Open', x + 13, y);
+            p.fill(CLOSED_HEX);
+            p.circle(x + 72, y, 8);
+            p.fill('#4f4a45');
+            p.text('Closed', x + 85, y);
         }
     };
 })();
