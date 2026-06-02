@@ -217,7 +217,8 @@
     }
 
     function countUp(target, sceneProgress) {
-        return target * easeOut(clamp01(sceneProgress));
+        var slowed = Math.pow(clamp01(sceneProgress), 1.8);
+        return target * easeOut(slowed);
     }
 
     function setPanel(progress) {
@@ -236,8 +237,8 @@
         mapNote.innerHTML =
             '<strong>Every dot is a Philadelphia restaurant.</strong><br>' +
             'Blue dots are still open. Red dots are closed. They are mixed across the city, which means closure is not isolated to one unsafe area. The reason restaurants disappear is deeper than location alone.';
-        mapNote.style.opacity = String((1 - clamp01((progress - 0.95) / 0.03)) * mapScene);
-        mapLegend.style.opacity = String((1 - clamp01((progress - 0.95) / 0.03)) * mapScene);
+        mapNote.style.opacity = String((1 - clamp01((progress - 0.975) / 0.025)) * mapScene);
+        mapLegend.style.opacity = String((1 - clamp01((progress - 0.975) / 0.025)) * mapScene);
 
         if (scene5 > 0) {
             panel.innerHTML = '';
@@ -292,7 +293,7 @@
 
         if (overlay) overlay.style.pointerEvents = 'none';
 
-        var whiten = easeInOut(clamp01((progress - 0.94) / 0.06));
+        var whiten = easeInOut(clamp01((progress - 0.965) / 0.035));
         var bg = [
             Math.round(COL_BG_RGB[0] + (255 - COL_BG_RGB[0]) * whiten),
             Math.round(COL_BG_RGB[1] + (255 - COL_BG_RGB[1]) * whiten),
@@ -305,7 +306,7 @@
         ctx.fillStyle = 'rgb(' + bg[0] + ',' + bg[1] + ',' + bg[2] + ')';
         ctx.fillRect(0, 0, W, H);
 
-        if (overlay) overlay.style.opacity = String(1 - clamp01((progress - 0.97) / 0.03));
+        if (overlay) overlay.style.opacity = String(1 - clamp01((progress - 0.985) / 0.015));
 
         var cover = document.getElementById('cover-info');
         if (cover) {
