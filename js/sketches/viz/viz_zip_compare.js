@@ -1,13 +1,25 @@
 // Side-by-side ZIP comparison: housing prices vs restaurant ratings by year.
 (function () {
-    var SHARED_BINS = [
+    var RENT_BINS = [
         '#C8E4F5',
+        '#8FD0EE',
         '#56B4E9',
-        '#0072B2',
+        '#1F8FC6',
+        '#0072B2'
+    ];
+
+    var RATING_BINS = [
         '#F0E442',
+        '#F5C937',
         '#E69F00',
+        '#D66B6F',
         '#CC79A7'
     ];
+    var FOCUS_ZIPS = ['19104', '19130', '19103', '19102', '19123', '19107', '19106', '19146', '19147', '19132', '19133', '19125', '19121', '19122'];
+    var FOCUS_ZIP_SET = FOCUS_ZIPS.reduce(function (set, zip) {
+        set[zip] = true;
+        return set;
+    }, {});
 
     function quantizeT(t, bins) {
         var clamped = Math.max(0, Math.min(1, t));
@@ -15,18 +27,18 @@
         return Math.round(clamped * (bins - 1)) / (bins - 1);
     }
 
-    function sharedBinColor(p, t) {
-        var clamped = quantizeT(t, SHARED_BINS.length);
-        var index = Math.round(clamped * (SHARED_BINS.length - 1));
-        return p.color(SHARED_BINS[index]);
+    function binColor(p, t, bins) {
+        var clamped = quantizeT(t, bins.length);
+        var index = Math.round(clamped * (bins.length - 1));
+        return p.color(bins[index]);
     }
 
     function ratingColorRamp(p, t) {
-        return sharedBinColor(p, t);
+        return binColor(p, t, RATING_BINS);
     }
 
     function housingColorRamp(p, t) {
-        return sharedBinColor(p, t);
+        return binColor(p, t, RENT_BINS);
     }
 
     function textColorFor(p, colorValue) {
@@ -225,6 +237,89 @@
         return shared;
     }
 
+    function filterGeoData(boundaryData) {
+        if (!boundaryData || !boundaryData.features || !boundaryData.features.length) return boundaryData;
+
+        var features = boundaryData.features.filter(function (feature) {
+            return FOCUS_ZIP_SET[feature.zip];
+        });
+        if (!features.length) return boundaryData;
+
+        var minLon = Infinity;
+        var maxLon = -Infinity;
+        var minLat = Infinity;
+        var maxLat = -Infinity;
+
+        features.forEach(function (feature) {
+            feature.polygons.forEach(function (polygon) {
+                polygon.forEach(function (ring) {
+                    ring.forEach(function (point) {
+                        var lon = point[0];
+                        var lat = point[1];
+                        if (lon < minLon) minLon = lon;
+                        if (lon > maxLon) maxLon = lon;
+                        if (lat < minLat) minLat = lat;
+                        if (lat > maxLat) maxLat = lat;
+                    });
+                });
+            });
+        });
+
+        return {
+            features: features,
+            bounds: {
+                minLon: minLon,
+                maxLon: maxLon,
+                minLat: minLat,
+                maxLat: maxLat
+            }
+        };
+    }
+
+    function focusValueRange(data, valueAccessor) {
+        var minValue = Infinity;
+        var maxValue = -Infinity;
+        var years = data && data.years ? data.years : [];
+
+        years.forEach(function (year) {
+            var yearData = data.byYear[year] || { zipValues: {} };
+            FOCUS_ZIPS.forEach(function (zip) {
+                var value = valueAccessor(yearData.zipValues[zip]);
+                if (value === null || value === undefined || !isFinite(value)) return;
+                if (value < minValue) minValue = value;
+                if (value > maxValue) maxValue = value;
+            });
+        });
+
+        if (minValue === Infinity || maxValue === -Infinity) {
+            return {
+                minValue: data.minValue || 0,
+                maxValue: data.maxValue || 1
+            };
+        }
+
+        return { minValue: minValue, maxValue: maxValue };
+    }
+
+    function focusYearValueRange(data, year, valueAccessor) {
+        var minValue = Infinity;
+        var maxValue = -Infinity;
+        var yearData = data && data.byYear ? (data.byYear[year] || { zipValues: {} }) : { zipValues: {} };
+
+        FOCUS_ZIPS.forEach(function (zip) {
+            var value = valueAccessor(yearData.zipValues[zip]);
+            if (value === null || value === undefined || !isFinite(value)) return;
+            if (value < minValue) minValue = value;
+            if (value > maxValue) maxValue = value;
+        });
+
+        if (minValue === Infinity || maxValue === -Infinity || minValue === maxValue) {
+            return focusValueRange(data, valueAccessor);
+        }
+
+        return { minValue: minValue, maxValue: maxValue };
+    }
+
     window.VizZipCompare = {
         prepareYelpData: function (payload) {
             payload = payload || {};
@@ -335,7 +430,7 @@
             p.textStyle(p.BOLD);
             p.textSize(13);
             p.fill(45);
-            p.text('Year ' + selectedYear, sliderX + sliderW / 2, sliderY - 24);
+            p.text(String(selectedYear), sliderX + sliderW / 2, sliderY - 24);
 
             p.stroke('#d0d9de');
             p.strokeWeight(6);
@@ -343,6 +438,16 @@
 
             p.stroke('#0072B2');
             p.line(sliderX, sliderY, sliderX + sliderW * progress, sliderY);
+
+            if (years.length > 1) {
+                for (var tickIndex = 0; tickIndex < years.length; tickIndex++) {
+                    var tickT = tickIndex / (years.length - 1);
+                    var tickX = sliderX + sliderW * tickT;
+                    p.stroke(tickIndex === index ? '#0072B2' : '#b9c5cc');
+                    p.strokeWeight(tickIndex === index ? 2 : 1);
+                    p.line(tickX, sliderY + 10, tickX, sliderY + 18);
+                }
+            }
 
             var knobX = sliderX + sliderW * progress;
             p.noStroke();
@@ -367,10 +472,11 @@
             p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 24);
         },
 
-        drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn) {
+        drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn, missingLabel) {
             var legendX = x;
             var legendY = y;
-            var legendW = w;
+            var swatchGap = missingLabel ? 92 : 0;
+            var legendW = Math.max(80, w - swatchGap);
             var steps = 60;
 
             p.fill(30);
@@ -394,23 +500,33 @@
             p.text(rangeLabelLeft, legendX, legendY + 10);
             p.textAlign(p.RIGHT, p.TOP);
             p.text(rangeLabelRight, legendX + legendW, legendY + 10);
+
+            if (missingLabel) {
+                var swatchX = legendX + legendW + 16;
+                p.noStroke();
+                p.fill('#d8dde1');
+                p.rect(swatchX, legendY, 16, 8);
+                p.fill('#4f4a45');
+                p.textAlign(p.LEFT, p.TOP);
+                p.text(missingLabel, swatchX + 22, legendY - 1, swatchGap - 22, 28);
+            }
+        },
+
+        getHoveredZipForPanel: function (p, panel, geoData) {
+            if (!geoData || !geoData.features || !geoData.features.length) return null;
+            if (p.mouseX < panel.mapX || p.mouseX > panel.mapX + panel.mapW ||
+                p.mouseY < panel.mapY || p.mouseY > panel.mapY + panel.mapH) {
+                return null;
+            }
+
+            var projectedFeatures = projectFeatures(geoData, buildProjection(geoData.bounds, panel.mapX, panel.mapY, panel.mapW, panel.mapH));
+            var hoveredFeature = findHoveredFeature(p, projectedFeatures);
+            return hoveredFeature ? hoveredFeature.zip : null;
         },
 
         drawPanel: function (p, manager, panel, config) {
             var projectedFeatures = projectFeatures(config.geoData, buildProjection(config.geoData.bounds, panel.mapX, panel.mapY, panel.mapW, panel.mapH));
-            var selectedZip = manager[config.selectionKey] || null;
-            var justPressed = p.mouseIsPressed && !manager.zipCompareMouseWasPressed;
-            var clickedInMap = justPressed &&
-                p.mouseX >= panel.mapX &&
-                p.mouseX <= panel.mapX + panel.mapW &&
-                p.mouseY >= panel.mapY &&
-                p.mouseY <= panel.mapY + panel.mapH;
-
-            if (clickedInMap) {
-                var clickedFeature = findHoveredFeature(p, projectedFeatures);
-                selectedZip = clickedFeature ? clickedFeature.zip : null;
-                manager[config.selectionKey] = selectedZip;
-            }
+            var selectedZip = config.selectedZip || null;
 
             var range = Math.max(0.0001, config.maxValue - config.minValue);
 
@@ -474,6 +590,13 @@
 
             var housingYear = housingData.byYear[selectedYear] || { zipValues: {}, cityAverage: 0 };
             var yelpYear = yelpData.byYear[selectedYear] || { zipValues: {}, cityAverage: 0 };
+            var focusedGeoData = filterGeoData(geoData);
+            var focusedHousingRange = focusValueRange(housingData, function (value) {
+                return typeof value === 'number' ? value : null;
+            });
+            var focusedRatingRange = focusYearValueRange(yelpData, selectedYear, function (value) {
+                return value ? value.avgRating : null;
+            });
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 16;
             var w = (manager.width || 600) - 40;
@@ -501,15 +624,18 @@
                 mapW: panelW - 20,
                 mapH: panelH - 92
             };
+            var hoveredZip =
+                this.getHoveredZipForPanel(p, leftPanel, focusedGeoData) ||
+                this.getHoveredZipForPanel(p, rightPanel, focusedGeoData);
 
             p.push();
             this.drawPanel(p, manager, leftPanel, {
                 title: 'Rent Prices by Year',
-                geoData: geoData,
+                geoData: focusedGeoData,
                 values: housingYear.zipValues,
-                minValue: housingData.minValue,
-                maxValue: housingData.maxValue,
-                selectionKey: 'zipCompareHousingSelectedZip',
+                minValue: focusedHousingRange.minValue,
+                maxValue: focusedHousingRange.maxValue,
+                selectedZip: hoveredZip,
                 rampFn: housingColorRamp,
                 valueAccessor: function (value) { return typeof value === 'number' ? value : null; },
                 defaultHeader: 'Philadelphia overall',
@@ -524,11 +650,11 @@
 
             this.drawPanel(p, manager, rightPanel, {
                 title: 'Restaurant Ratings by Year',
-                geoData: geoData,
+                geoData: focusedGeoData,
                 values: yelpYear.zipValues,
-                minValue: yelpData.minValue,
-                maxValue: yelpData.maxValue,
-                selectionKey: 'zipCompareRatingSelectedZip',
+                minValue: focusedRatingRange.minValue,
+                maxValue: focusedRatingRange.maxValue,
+                selectedZip: hoveredZip,
                 rampFn: ratingColorRamp,
                 valueAccessor: function (value) { return value ? value.avgRating : null; },
                 defaultHeader: 'Philadelphia overall',
@@ -547,7 +673,7 @@
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(11);
-            p.text('Click any ZIP code area to view its average rent or restaurant rating.', left + w / 2, top + 42);
+            p.text('Hover over any ZIP code area to compare its rent and restaurant rating.', left + w / 2, top + 42);
 
             this.drawLegendBlock(
                 p,
@@ -555,8 +681,8 @@
                 leftPanel.y + leftPanel.h + 18,
                 leftPanel.w - 40,
                 'Rent prices',
-                'low',
-                'high',
+                formatCurrency(focusedHousingRange.minValue),
+                formatCurrency(focusedHousingRange.maxValue),
                 housingColorRamp
             );
 
@@ -566,9 +692,10 @@
                 rightPanel.y + rightPanel.h + 18,
                 rightPanel.w - 40,
                 'Restaurant ratings',
-                'low',
-                'high',
-                ratingColorRamp
+                focusedRatingRange.minValue.toFixed(1),
+                focusedRatingRange.maxValue.toFixed(1),
+                ratingColorRamp,
+                'no rating'
             );
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);

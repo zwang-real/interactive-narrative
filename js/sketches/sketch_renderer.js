@@ -69,11 +69,7 @@
         },
 
         draw: function (p, manager, ai, progress) {
-            // Image 1 - Where They Stand: citywide rating and survival map
-            if (ai === 2) {
-                window.VizWhereTheyStand.draw(p, manager);
-                return;
-            }
+            // Where They Stand is a full-text section.
             // Image 2 — Heatmap: reviews vs ratings, open vs closed
             if (ai === 3) {
                 window.VizYelpHeatmap.draw(p, manager);

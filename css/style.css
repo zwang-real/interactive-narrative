@@ -123,6 +123,18 @@ body {
   color: #222;
 }
 
+.step.compact-text-section {
+  min-height: auto;
+  margin-top: 0;
+  margin-bottom: 96px;
+  padding: clamp(28px, 6vh, 64px) 0;
+  justify-content: flex-start;
+}
+
+.step.before-compact-section {
+  margin-bottom: 96px;
+}
+
 /* Default title style: Spectral bold (image titles) */
 #sections .title {
   font-family: "Spectral", Georgia, serif;
