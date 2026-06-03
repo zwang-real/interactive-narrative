@@ -507,6 +507,7 @@
                 68
             );
 
+            p.textStyle(p.BOLD);
             p.textSize(15);
             p.text(
                 selected
