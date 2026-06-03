@@ -511,7 +511,7 @@ body {
 
 /* Empty step that reserves scroll distance for the closing overlay. */
 #closing-step {
-  min-height: 200vh;
+  min-height: 150vh;
 }
 
 /* Fixed full-screen overlay holding the closing canvas + lines.

@@ -72,9 +72,10 @@
     var W = window.innerWidth;
     var H = window.innerHeight;
     var rect = step.getBoundingClientRect();
-    var total = Math.max(1, step.offsetHeight - H);
-    var progress = clamp01(-rect.top / total);
-    var inZone = rect.top <= 0 && rect.bottom >= H;
+    var entryOffset = H * 0.5;  // start overlay when step top is at mid-viewport
+    var inZone = rect.top <= entryOffset && rect.bottom >= H;
+    var total = Math.max(1, step.offsetHeight - entryOffset);
+    var progress = clamp01((-rect.top + entryOffset) / total);
 
     // Outside the closing: hide the overlay and reset, so the animation replays
     // cleanly if the reader scrolls back up and returns.
