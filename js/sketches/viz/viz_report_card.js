@@ -97,7 +97,7 @@
 
             var pad = 28;
             var labelX = left + pad;
-            var colsStart = left + pad + 196;
+            var colsStart = left + pad + 170;
             var colsW = (left + w - pad) - colsStart;
             var colX = [colsStart + colsW*0.27, colsStart + colsW*0.73];
             var cellHalfW = Math.min(74, colsW*0.24);
@@ -112,7 +112,7 @@
             for (var c=0;c<2;c++){
                 p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(15);
                 p.textAlign(p.CENTER, p.TOP); p.text(RESTAURANTS[c].name, colX[c], headY);
-                p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15); p.fill(COL_SUB);
+                p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(11); p.fill(COL_SUB);
                 p.text(RESTAURANTS[c].sub, colX[c], headY + 18);
             }
 
@@ -131,8 +131,6 @@
                 if(i>0 && f.counts===false && FACTORS[i-1].counts===true){
                     p.stroke(COL_LINE); p.strokeWeight(1);
                     p.line(left+28, rowTop, left+w-28, rowTop); p.noStroke();
-                    p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);
-                    p.textAlign(p.LEFT, p.TOP); p.text('feels decisive, isn\'t', labelX + 88, rowTop + 4);
                 }
 
                 p.fill(f.counts ? COL_TEXT : COL_SUB);
