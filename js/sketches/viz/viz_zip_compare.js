@@ -417,7 +417,7 @@
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
             var sliderW = Math.min(360, w * 0.55);
             var sliderX = left + w / 2 - sliderW / 2;
-            var sliderY = top + h + 16;
+            var sliderY = top + h - 36;
             var knobRadius = 10;
             var slider = { x: sliderX, y: sliderY, w: sliderW, progress: progress, knobRadius: knobRadius };
 
@@ -462,16 +462,16 @@
             p.textStyle(p.NORMAL);
             p.textSize(MAP_LABEL_SIZE);
             p.textAlign(p.LEFT, p.TOP);
-            p.text(String(minYear), sliderX, sliderY + 12);
+            p.text(String(minYear), sliderX, sliderY + 14);
             p.textAlign(p.RIGHT, p.TOP);
-            p.text(String(maxYear), sliderX + sliderW, sliderY + 12);
+            p.text(String(maxYear), sliderX + sliderW, sliderY + 14);
 
             p.fill('#4f4a45');
             p.textAlign(p.CENTER, p.TOP);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
             p.textSize(MAP_LABEL_SIZE);
-            p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 24);
+            p.text('Drag the slider to change the year and visualize the maps for that year.', sliderX + sliderW / 2, sliderY + 42);
         },
 
         drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn, missingLabel) {
@@ -680,7 +680,7 @@
             this.drawLegendBlock(
                 p,
                 leftPanel.x + 20,
-                leftPanel.y + leftPanel.h + 50,
+                leftPanel.y + leftPanel.h + 36,
                 leftPanel.w - 40,
                 'Rent prices',
                 formatCurrency(focusedHousingRange.minValue),
@@ -691,7 +691,7 @@
             this.drawLegendBlock(
                 p,
                 rightPanel.x + 20,
-                rightPanel.y + rightPanel.h + 50,
+                rightPanel.y + rightPanel.h + 36,
                 rightPanel.w - 40,
                 'Restaurant ratings',
                 focusedRatingRange.minValue.toFixed(1),

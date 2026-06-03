@@ -11,7 +11,7 @@
     var COL_BORDER = '#e6e2dc';
     var FONT_TITLE = 22;
     var FONT_LABEL = 15;
-    var FONT_SMALL = 13;
+    var FONT_SMALL = 15;
 
     var VARIABLES = [
         { key: 'delivery',    label: 'Delivery'  },
@@ -40,7 +40,7 @@
 
         var panelW = 142;
         var panelX = (manager.offsetX || 0) + 16;
-        var panelY = (manager.offsetY || 0) + 52;
+        var panelY = (manager.offsetY || 0) + 76;
         var btnH   = 42;
         var btnGap = 10;
 
@@ -64,13 +64,13 @@
         if (!survivalData) return;
         var rows = survivalData[activeVar] || [];
         var n    = rows.length;
-        var gap  = n > 10 ? 4 : (n > 6 ? 6 : 10);
+        var gap  = n <= 2 ? 64 : (n > 10 ? 4 : (n > 6 ? 8 : 18));
         var barW = n ? Math.min(40, (chartW - gap * (n + 1)) / n) : 40;
         var totalW = n * barW + (n - 1) * gap;
         var startX = chartX + (chartW - totalW) / 2;
 
         // cuisine: leave more room at bottom for angled labels
-        var labelAreaH = isCuisine() ? 64 : 28;
+        var labelAreaH = isCuisine() ? 76 : 34;
         var maxH = chartH - labelAreaH - 24;
 
         bars = rows.map(function (d, i) {
@@ -158,7 +158,7 @@
                 p.textAlign(p.CENTER, p.TOP);
                 var labelLines = wrapLabel(bar.label, 10);
                 labelLines.forEach(function (line, li) {
-                    p.text(line, bar.x + bar.w / 2, bar.chartBottom + 5 + li * 12);
+                    p.text(line, bar.x + bar.w / 2, bar.chartBottom + 5 + li * 15);
                 });
             }
 
@@ -228,8 +228,8 @@
         p.fill(COL_HIGH); p.rect(lx, ly, 10, 10, 2);
         p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(FONT_SMALL); p.textAlign(p.LEFT, p.CENTER);
         p.text('\u2265 50% survival', lx + 14, ly + 5);
-        p.fill(COL_LOW); p.rect(lx + 112, ly, 10, 10, 2);
-        p.fill(COL_MUTED); p.text('< 50% survival', lx + 126, ly + 5);
+        p.fill(COL_LOW); p.rect(lx + 154, ly, 10, 10, 2);
+        p.fill(COL_MUTED); p.text('< 50% survival', lx + 168, ly + 5);
     }
 
     function checkButtonClick(mx, my, p, manager) {
@@ -282,7 +282,7 @@
             p.rect(manager.offsetX || 0, manager.offsetY || 0, manager.width || p.width, manager.height || p.height);
 
             if (!survivalData) {
-                p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(13);
+                p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(FONT_LABEL);
                 p.textAlign(p.CENTER, p.CENTER);
                 p.text('Loading data\u2026', (manager.width || p.width) / 2, (manager.height || p.height) / 2);
                 return;

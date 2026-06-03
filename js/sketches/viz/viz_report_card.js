@@ -103,21 +103,21 @@
             var cellHalfW = Math.min(74, colsW*0.24);
 
             p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD);
-            p.textAlign(p.LEFT, p.TOP); p.textSize(19);
+            p.textAlign(p.LEFT, p.TOP); p.textSize(22);
             p.text('Two restaurants, one difference', labelX, top + 20);
-            p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(10); p.fill(COL_SUB);
+            p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15); p.fill(COL_SUB);
             p.text('For each row, click a cell to judge: does it beat the city?', labelX, top + 48);
 
             var headY = top + 88;
             for (var c=0;c<2;c++){
                 p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(15);
                 p.textAlign(p.CENTER, p.TOP); p.text(RESTAURANTS[c].name, colX[c], headY);
-                p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(9); p.fill(COL_SUB);
+                p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15); p.fill(COL_SUB);
                 p.text(RESTAURANTS[c].sub, colX[c], headY + 18);
             }
 
             var rowsTop = headY + 44;
-            var rowH = Math.min(58, (h - 268) / FACTORS.length);
+            var rowH = Math.min(66, (h - 228) / FACTORS.length);
             for (var i=0;i<FACTORS.length;i++){
                 var f = FACTORS[i];
                 var rowTop = rowsTop + i*rowH;
@@ -131,18 +131,18 @@
                 if(i>0 && f.counts===false && FACTORS[i-1].counts===true){
                     p.stroke(COL_LINE); p.strokeWeight(1);
                     p.line(left+28, rowTop, left+w-28, rowTop); p.noStroke();
-                    p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(9);
-                    p.textAlign(p.LEFT, p.BOTTOM); p.text('feels decisive, isn\'t', labelX, rowTop-3);
+                    p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);
+                    p.textAlign(p.LEFT, p.TOP); p.text('feels decisive, isn\'t', labelX + 88, rowTop + 4);
                 }
 
                 p.fill(f.counts ? COL_TEXT : COL_SUB);
-                p.textFont('Spectral'); p.textStyle(f.counts?p.BOLD:p.NORMAL); p.textSize(14);
+                p.textFont('Spectral'); p.textStyle(f.counts?p.BOLD:p.NORMAL); p.textSize(15);
                 p.textAlign(p.LEFT, p.BOTTOM); p.text(f.label, labelX, cy);
-                p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(9);
+                p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15);
                 p.textAlign(p.LEFT, p.TOP); p.text('city: ' + f.bench, labelX, cy + 2);
 
                 for (var c2=0;c2<2;c2++){
-                    p.fill(COL_TEXT); p.textFont('IBM Plex Mono'); p.textSize(11);
+                    p.fill(COL_TEXT); p.textFont('IBM Plex Mono'); p.textSize(15);
                     p.textAlign(p.CENTER, p.BOTTOM); p.text(f.vals[c2], colX[c2], cy - 2);
                     drawMark(p, colX[c2], cy + 13, judged[i][c2], f.beats[c2]);
                     cellHits.push({ x0: colX[c2]-cellHalfW, x1: colX[c2]+cellHalfW,
@@ -151,10 +151,10 @@
             }
 
             var scoreY = rowsTop + FACTORS.length*rowH + 24;
-            p.fill(COL_TEXT); p.textFont('IBM Plex Mono'); p.textSize(11);
+            p.fill(COL_TEXT); p.textFont('IBM Plex Mono'); p.textSize(15);
             p.textAlign(p.LEFT, p.CENTER); p.text('Factors that move survival', labelX, scoreY);
             for (var c3=0;c3<2;c3++){
-                p.textAlign(p.CENTER, p.CENTER); p.textSize(16); p.textStyle(p.BOLD);
+                p.textAlign(p.CENTER, p.CENTER); p.textSize(15); p.textStyle(p.BOLD);
                 if(countingJudged(c3)){
                     p.fill(score(c3)>=2 ? COL_GREEN : COL_CLOSED);
                     p.text(score(c3) + ' / 3', colX[c3], scoreY);
@@ -164,25 +164,25 @@
 
             var bottomY = scoreY + 42;
             if(!allJudged()){
-                p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(11);
+                p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);
                 p.textAlign(p.CENTER, p.CENTER);
                 p.text('Judge every cell to compare.', left + w/2, bottomY + 8);
             } else if(!outcomeRevealed){
-                p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(16);
+                p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(22);
                 p.textAlign(p.CENTER, p.CENTER); p.text('Which one is still open?', left + w/2, bottomY);
                 p.textStyle(p.NORMAL);
                 var bw=200, bh=40, bx=left+w/2-bw/2, by=bottomY+20;
                 revealBox = { x:bx, y:by, w:bw, h:bh };
                 p.fill(COL_BTN); p.rect(bx,by,bw,bh,6);
-                p.fill(255); p.textFont('IBM Plex Mono'); p.textSize(13);
+                p.fill(255); p.textFont('IBM Plex Mono'); p.textSize(15);
                 p.textAlign(p.CENTER, p.CENTER); p.text('Reveal what happened', left+w/2, by+bh/2);
             } else {
                 for (var c4=0;c4<2;c4++){
                     var closed = (c4===0);
-                    p.fill(closed?COL_CLOSED:COL_GREEN); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(17);
+                    p.fill(closed?COL_CLOSED:COL_GREEN); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(22);
                     p.textAlign(p.CENTER, p.CENTER); p.text(closed?'Closed':'Still open', colX[c4], bottomY);
                 }
-                p.textStyle(p.NORMAL); p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(11);
+                p.textStyle(p.NORMAL); p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);
                 p.textAlign(p.CENTER, p.TOP);
                 p.text('0 of 3 factors: ~33% survive.   3 of 3: ~70%.', left+w/2, bottomY+22);
             }

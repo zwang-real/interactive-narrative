@@ -9,10 +9,10 @@ function startP5() {
         var w, h, margin;
         if (isMobile) {
             w = window.innerWidth - 24;
-            margin = { top: 0, left: Math.round(w * 0.07), bottom: 25, right: 8 };
+            margin = { top: 0, left: Math.round(w * 0.07), bottom: 96, right: 8 };
             h = Math.round(w * (520 / 600));
         } else {
-            margin = { top: 0, left: 80, bottom: 4, right: 10 };
+            margin = { top: 0, left: 80, bottom: 96, right: 10 };
             var isFullViz = !!(document.querySelector('#graphic.layout-full-viz'));
             var rawW = isFullViz
                 ? Math.round(window.innerWidth) - 40

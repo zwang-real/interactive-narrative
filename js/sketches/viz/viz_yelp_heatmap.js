@@ -370,7 +370,7 @@
 
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
-            p.textSize(16);
+            p.textSize(15);
             p.fill('#1e1b18');
             p.textAlign(p.CENTER, p.CENTER);
             p.text(String(selectedYear), slider.x + slider.w / 2, slider.y - 25);
@@ -399,7 +399,7 @@
             p.fill(CONTROL_TEXT);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(15);
             p.textAlign(p.LEFT, p.TOP);
             p.text(String(years[0]), slider.x, slider.y + 17);
             p.textAlign(p.RIGHT, p.TOP);
@@ -421,17 +421,13 @@
             p.fill(active ? '#ffffff' : '#1e1b18');
             p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(11);
+            p.textSize(15);
             p.textAlign(p.CENTER, p.CENTER);
             p.text(label, rect.x + rect.w / 2, rect.y + rect.h / 2);
         },
 
         draw: function (p, manager) {
-            var yearData = manager.yelpHeatmapYearData;
-            var years = yearData && yearData.years ? yearData.years : [];
-            var selectedYear = getSelectedYear(manager, years);
-            var data = selectedYear && yearData.byYear ? yearData.byYear[selectedYear] : null;
-            if (!data) data = manager.yelpHeatmapData || this.prepareData([]);
+            var data = manager.yelpHeatmapData || this.prepareData([]);
 
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 18;
@@ -442,7 +438,8 @@
             var gridLeft = left + 86;
             var gridTop = top + 62;
             var gridW = panelW - 96;
-            var gridH = h - 150;
+            var minGridH = (manager.width || 600) < 460 ? 118 : 220;
+            var gridH = Math.max(minGridH, h - 230);
             var cols = REVIEW_BINS.length - 1;
             var rows = RATING_BINS.length - 1;
             var cellW = gridW / cols;
@@ -454,13 +451,13 @@
                 p.fill(20);
                 p.textFont('Spectral');
                 p.textStyle(p.BOLD);
-                p.textSize(20);
+                p.textSize(22);
                 p.textAlign(p.CENTER, p.TOP);
                 p.text(title, panelLeft + gridW / 2, top);
 
                 p.textFont('IBM Plex Mono');
                 p.textStyle(p.NORMAL);
-                p.textSize(12);
+                p.textSize(15);
                 p.fill(CONTROL_TEXT);
 
                 for (var c = 0; c < cols; c++) {
@@ -487,7 +484,7 @@
                             p.fill(t > 0.62 ? '#ffffff' : '#1e1b18');
                             p.textAlign(p.CENTER, p.CENTER);
                             p.textStyle(p.BOLD);
-                            p.textSize(Math.max(12, Math.min(14, cellW * 0.38)));
+                            p.textSize(Math.max(15, Math.min(16, cellW * 0.38)));
                             p.text(String(count), x0 + cellW / 2, y0 + cellH / 2);
                         }
                     }
@@ -500,23 +497,23 @@
             p.fill(20);
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
-            p.textSize(20);
+            p.textSize(22);
             p.textAlign(p.CENTER, p.TOP);
-            p.text('Number of Ratings', left + w / 2, gridTop + gridH + 66);
+            p.text('Number of Ratings', left + w / 2, gridTop + gridH + 76);
 
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(15);
             p.fill('#6d6862');
-            var scopeLabel = selectedYear ? 'Cumulative reviews through ' + selectedYear + '; restaurants with fewer than 1k ratings' : 'Showing restaurants with fewer than 1k ratings';
-            p.text(scopeLabel, left + w / 2, gridTop + gridH + 92);
+            var scopeLabel = 'Total reviews across all years; restaurants with fewer than 1k ratings';
+            p.text(scopeLabel, left + w / 2, gridTop + gridH + 104);
 
             p.push();
             p.translate(left - 50, gridTop + gridH / 2);
             p.rotate(-p.HALF_PI);
             p.textFont('Spectral');
             p.textStyle(p.BOLD);
-            p.textSize(20);
+            p.textSize(22);
             p.fill(20);
             p.textAlign(p.CENTER, p.CENTER);
             p.text('Restaurant Rating', 0, 0);
@@ -524,7 +521,7 @@
 
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(13);
+            p.textSize(15);
             p.fill(CONTROL_TEXT);
 
             for (var r = 0; r < rows; r++) {
@@ -540,33 +537,29 @@
             p.fill('#1e1b18');
             p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(13);
+            p.textSize(15);
             p.textAlign(p.CENTER, p.TOP);
             p.text('High Ratings and Many Reviews Still Appear Among Closed Restaurants.', left + w / 2, top + 32);
 
-            var legendX = left + w / 2 - 92;
+            var legendX = left + w / 2 - 120;
             var legendY = top + h - 2;
             p.noStroke();
             p.fill(OPEN_HEX);
             p.circle(legendX, legendY + 5, 9);
             p.fill(CLOSED_HEX);
-            p.circle(legendX + 100, legendY + 5, 9);
+            p.circle(legendX + 118, legendY + 5, 9);
             p.fill(CONTROL_TEXT);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(15);
             p.textAlign(p.LEFT, p.CENTER);
             p.text('Open', legendX + 12, legendY + 5);
-            p.text('Closed', legendX + 112, legendY + 5);
+            p.text('Closed', legendX + 132, legendY + 5);
 
             p.textAlign(p.RIGHT, p.CENTER);
-            p.textSize(12);
+            p.textSize(15);
             p.fill(70);
             p.text('Open: ' + data.totalOpen + '  |  Closed: ' + data.totalClosed, left + w, legendY + 5);
-
-            if (years.length) {
-                this.drawControls(p, manager, years, selectedYear, left, top + h + 32, w);
-            }
 
             p.pop();
         }

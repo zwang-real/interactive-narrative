@@ -286,17 +286,17 @@
             var index = Math.max(0, years.indexOf(selectedYear));
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
             var slider = {
-                x: x + 132,
+                x: x + 160,
                 y: y + 16,
-                w: w - 152,
+                w: w - 180,
                 progress: progress,
                 knobRadius: 8,
                 playX: x,
                 playY: y,
                 playSize: 28,
-                speedX: x + 40,
+                speedX: x + 52,
                 speedY: y,
-                speedW: 78,
+                speedW: 96,
                 speedH: 28
             };
 
@@ -330,7 +330,7 @@
             p.noStroke();
             p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(9);
+            p.textSize(15);
             p.textAlign(p.CENTER, p.CENTER);
             p.fill(manager.whereTheyStandSpeed === 'slow' ? '#ffffff' : '#111111');
             p.text('slow', slider.speedX + slider.speedW / 4, slider.speedY + slider.speedH / 2);
@@ -362,7 +362,7 @@
             p.fill('#4f4a45');
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(9);
+            p.textSize(15);
             p.textAlign(p.LEFT, p.TOP);
             p.text(String(years[0]), slider.x, slider.y + 18);
             p.textAlign(p.RIGHT, p.TOP);
@@ -371,7 +371,7 @@
             p.fill('#111111');
             p.textAlign(p.CENTER, p.BOTTOM);
             p.textStyle(p.BOLD);
-            p.textSize(12);
+            p.textSize(15);
             p.text(String(selectedYear), slider.x + slider.w / 2, slider.y - 8);
         },
 
@@ -493,28 +493,28 @@
 
             p.fill('#111111');
             p.textStyle(p.BOLD);
-            p.textSize(14);
+            p.textSize(15);
             p.text(selected ? selected.name : 'Philadelphia restaurant summary', x, y, w, 44);
 
             p.fill('#4f4a45');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(15);
             p.text(
                 'Press play to autoplay, drag the slider or click a tick mark on the slider to choose a year.',
                 x,
                 y + 48,
                 w,
-                48
+                68
             );
 
-            p.textSize(13);
+            p.textSize(15);
             p.text(
                 selected
                     ? selectedYear + ' status: ' + (selected.isOpen ? 'Open' : 'Closed') +
                         '\nZIP avg rating: ' + (selectedZipMetric ? selectedZipMetric.avgRating.toFixed(2) : 'No reviews')
                     : selectedYear + ' survival rate: ' + survival + '\nAvg. rating: ' + rating,
                 x,
-                y + 104,
+                y + 124,
                 w,
                 64
             );
@@ -523,7 +523,7 @@
         drawLegend: function (p, x, y) {
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(11);
+            p.textSize(15);
             p.textAlign(p.LEFT, p.CENTER);
             p.noStroke();
             p.fill(OPEN_HEX);
