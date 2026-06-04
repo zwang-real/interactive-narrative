@@ -472,9 +472,9 @@
                 data,
                 selectedYearData,
                 selectedYear,
-                mapX + mapW - 218,
+                mapX + mapW - 260,
                 mapY + mapH - 176,
-                200
+                242
             );
             this.drawLegend(p, mapX + mapW / 2 - 98, sliderY + 56);
             p.pop();
@@ -504,7 +504,7 @@
                 x,
                 y + 48,
                 w,
-                68
+                96
             );
 
             p.textStyle(p.BOLD);
@@ -515,7 +515,7 @@
                         '\nZIP avg rating: ' + (selectedZipMetric ? selectedZipMetric.avgRating.toFixed(2) : 'No reviews')
                     : selectedYear + ' survival rate: ' + survival + '\nAvg. rating: ' + rating,
                 x,
-                y + 124,
+                y + 152,
                 w,
                 64
             );
