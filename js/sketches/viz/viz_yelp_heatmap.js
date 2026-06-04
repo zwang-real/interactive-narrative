@@ -34,6 +34,15 @@
         return stops[stops.length - 1].color;
     }
 
+    function clamp01(value) {
+        return Math.max(0, Math.min(1, value));
+    }
+
+    function smoothstep(value) {
+        var t = clamp01(value);
+        return t * t * (3 - 2 * t);
+    }
+
     function formatReviewBin(index) {
         if (index < 0 || index >= REVIEW_BINS.length - 1) return '';
         return formatCompactNumber(REVIEW_BINS[index]) + '-\n' + formatCompactNumber(REVIEW_BINS[index + 1]);
@@ -426,8 +435,9 @@
             p.text(label, rect.x + rect.w / 2, rect.y + rect.h / 2);
         },
 
-        draw: function (p, manager) {
+        draw: function (p, manager, progress) {
             var data = manager.yelpHeatmapData || this.prepareData([]);
+            var reveal = smoothstep(((progress === undefined ? 1 : progress) - 0.04) / 0.96);
 
             var left = manager.offsetX || 80;
             var top = (manager.offsetY || 0) + 18;
@@ -474,14 +484,20 @@
                         var count = data.matrix[dataRow][colIndex][key];
                         var t = data.maxCount > 0 ? count / data.maxCount : 0;
 
-                        p.fill(countColor(p, t, baseHex));
+                        var finalColor = countColor(p, t, baseHex);
+                        var stagger = (rowIndex + colIndex) * 0.035;
+                        var cellReveal = smoothstep((reveal - stagger) / 0.62);
+                        p.fill(p.lerpColor(p.color('#edf6fb'), finalColor, cellReveal));
                         p.stroke('#ffffff');
                         p.strokeWeight(2);
                         p.rect(x0, y0, cellW, cellH, 6);
 
-                        if (count > 0) {
+                        if (count > 0 && cellReveal > 0.58) {
+                            var countAlpha = clamp01((cellReveal - 0.58) / 0.42);
+                            var textColor = p.color(t > 0.62 ? '#ffffff' : '#1e1b18');
+                            textColor.setAlpha(255 * countAlpha);
                             p.noStroke();
-                            p.fill(t > 0.62 ? '#ffffff' : '#1e1b18');
+                            p.fill(textColor);
                             p.textAlign(p.CENTER, p.CENTER);
                             p.textStyle(p.BOLD);
                             p.textSize(Math.max(15, Math.min(16, cellW * 0.38)));

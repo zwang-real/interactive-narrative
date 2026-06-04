@@ -86,7 +86,7 @@
             }
             // Image 2 — Heatmap: reviews vs ratings, open vs closed
             if (ai === 3) {
-                window.VizYelpHeatmap.draw(p, manager);
+                window.VizYelpHeatmap.draw(p, manager, progress);
                 return;
             }
             // Image 3 — Survival dashboard (interactive)
