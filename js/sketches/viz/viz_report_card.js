@@ -1,17 +1,11 @@
 // Image 5 — The Report Card (Part 3), interactive
-// Two real Philadelphia restaurants, side by side. For each factor the reader
-// sees the restaurant's value AND the city benchmark, then clicks each cell to
-// judge whether it beats the city (green check) or not (red cross). Three rows
-// move survival; two are the things people assume matter but do not. Once every
-// cell is judged, a Reveal button shows the outcomes and the population odds.
 (function () {
 
     var RESTAURANTS = [
-        { name: 'Kanella South', sub: 'Greek \u00B7 opened ~3 years' },
-        { name: 'Barbuzzo',      sub: 'Mediterranean \u00B7 open 11 years' }
+        { name: 'Kanella South' },
+        { name: 'Barbuzzo' }
     ];
 
-    // beats[col] = the truth: does this restaurant beat the city benchmark?
     var FACTORS = [
         { label: 'Delivery',  bench: '54.5% offer it',  counts: true,
           vals: ['Not offered', 'Offered'], beats: [false, true] },
@@ -38,7 +32,7 @@
     var judged = [[false,false],[false,false],[false,false],[false,false],[false,false]];
     var outcomeRevealed = false;
     var flash = [0,0,0,0,0];
-    var cellHits = [];     // {x0,x1,y0,y1,row,col}
+    var cellHits = [];
     var revealBox = null;
 
     function clamp01(x){ return Math.max(0, Math.min(1, x)); }
@@ -80,7 +74,6 @@
             flash = [0,0,0,0,0];
         },
 
-        // clicking a number in the prose judges BOTH cells of that row and flashes it
         flashRow: function(index){
             if(index>=0 && index<5){ judged[index][0]=true; judged[index][1]=true; flash[index]=performance.now(); }
         },
@@ -100,24 +93,22 @@
             var colsStart = left + pad + 170;
             var colsW = (left + w - pad) - colsStart;
             var colX = [colsStart + colsW*0.27, colsStart + colsW*0.73];
-            var cellHalfW = Math.min(74, colsW*0.24);
 
             p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD);
             p.textAlign(p.LEFT, p.TOP); p.textSize(22);
             p.text('Two restaurants, one difference', labelX, top + 20);
             p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15); p.fill(COL_SUB);
-            p.text('For each row, click a cell to judge: does it beat the city?', labelX, top + 48);
+            p.text('For each row, click to judge: does it beat the city?', labelX, top + 48);
 
             var headY = top + 88;
             for (var c=0;c<2;c++){
                 p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(15);
                 p.textAlign(p.CENTER, p.TOP); p.text(RESTAURANTS[c].name, colX[c], headY);
-                p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(11); p.fill(COL_SUB);
-                p.text(RESTAURANTS[c].sub, colX[c], headY + 18);
             }
 
-            var rowsTop = headY + 44;
+            var rowsTop = headY + 26;
             var rowH = Math.min(66, (h - 228) / FACTORS.length);
+
             for (var i=0;i<FACTORS.length;i++){
                 var f = FACTORS[i];
                 var rowTop = rowsTop + i*rowH;
@@ -143,9 +134,9 @@
                     p.fill(COL_TEXT); p.textFont('IBM Plex Mono'); p.textSize(15);
                     p.textAlign(p.CENTER, p.BOTTOM); p.text(f.vals[c2], colX[c2], cy - 2);
                     drawMark(p, colX[c2], cy + 13, judged[i][c2], f.beats[c2]);
-                    cellHits.push({ x0: colX[c2]-cellHalfW, x1: colX[c2]+cellHalfW,
-                                    y0: rowTop, y1: rowTop+rowH, row: i, col: c2 });
                 }
+
+                cellHits.push({ x0: left+20, x1: left+w-20, y0: rowTop, y1: rowTop+rowH, row: i });
             }
 
             var scoreY = rowsTop + FACTORS.length*rowH + 24;
@@ -164,7 +155,7 @@
             if(!allJudged()){
                 p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);
                 p.textAlign(p.CENTER, p.CENTER);
-                p.text('Judge every cell to compare.', left + w/2, bottomY + 8);
+                p.text('Click each row to compare.', left + w/2, bottomY + 8);
             } else if(!outcomeRevealed){
                 p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(22);
                 p.textAlign(p.CENTER, p.CENTER); p.text('Which one is still open?', left + w/2, bottomY);
@@ -194,7 +185,9 @@
                my>=revealBox.y && my<=revealBox.y+revealBox.h){ outcomeRevealed=true; return; }
             for (var i=0;i<cellHits.length;i++){
                 var hb=cellHits[i];
-                if(mx>=hb.x0 && mx<=hb.x1 && my>=hb.y0 && my<=hb.y1){ judged[hb.row][hb.col]=true; return; }
+                if(mx>=hb.x0 && mx<=hb.x1 && my>=hb.y0 && my<=hb.y1){
+                    judged[hb.row][0]=true; judged[hb.row][1]=true; return;
+                }
             }
         }
     };
