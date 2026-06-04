@@ -54,7 +54,7 @@
 
         var chartX = panelX + panelW + 20;
         var chartY = (manager.offsetY || 0) + 52;
-        var chartW = W - chartX + (manager.offsetX || 0) - 8;
+        var chartW = W - chartX + (manager.offsetX || 0) - 88;
         var chartH = H - chartY - (manager.offsetY || 0) - 56;
 
         buildBars(chartX, chartY, chartW, chartH);
@@ -115,9 +115,9 @@
         p.noStroke();
         p.fill(COL_MUTED);
         p.textFont('IBM Plex Mono');
-        p.textSize(FONT_SMALL);
+        p.textSize(11);
         p.textAlign(p.LEFT, p.CENTER);
-        p.text('50%', bars[bars.length-1].x + bars[bars.length-1].w + 10, refY);
+        p.text('50%', bars[bars.length-1].x + bars[bars.length-1].w + 8, refY);
 
         bars.forEach(function (bar, i) {
             animProgress[bar.key] = lerp(animProgress[bar.key], 1, dt * 4);
