@@ -9,11 +9,11 @@
     ];
 
     var RATING_BINS = [
-        '#F0E442',
-        '#F5C937',
+        '#FFF3A3',
+        '#F6D64A',
         '#E69F00',
-        '#D66B6F',
-        '#CC79A7'
+        '#C97000',
+        '#9F4A00'
     ];
     var MAP_TITLE_SIZE = 22;
     var MAP_LABEL_SIZE = 15;
@@ -477,8 +477,9 @@
         drawLegendBlock: function (p, x, y, w, title, rangeLabelLeft, rangeLabelRight, rampFn, missingLabel) {
             var legendX = x;
             var legendY = y;
-            var swatchGap = missingLabel ? 92 : 0;
-            var legendW = Math.max(80, w - swatchGap);
+            var missingSegmentW = missingLabel ? 74 : 0;
+            var gradientX = legendX + missingSegmentW;
+            var legendW = Math.max(80, w - missingSegmentW);
             var steps = 60;
 
             p.fill(30);
@@ -492,25 +493,25 @@
             for (var i = 0; i < steps; i++) {
                 var t = i / (steps - 1);
                 p.fill(rampFn(p, t));
-                p.rect(legendX + t * legendW, legendY, legendW / steps + 1, 8);
+                p.rect(gradientX + t * legendW, legendY, legendW / steps + 1, 8);
             }
 
             p.fill('#4f4a45');
             p.textStyle(p.NORMAL);
             p.textSize(MAP_LABEL_SIZE);
             p.textAlign(p.LEFT, p.TOP);
-            p.text(rangeLabelLeft, legendX, legendY + 10);
+            p.text(rangeLabelLeft, gradientX, legendY + 10);
             p.textAlign(p.RIGHT, p.TOP);
-            p.text(rangeLabelRight, legendX + legendW, legendY + 10);
+            p.text(rangeLabelRight, gradientX + legendW, legendY + 10);
 
             if (missingLabel) {
-                var swatchX = legendX + legendW + 16;
                 p.noStroke();
                 p.fill('#d8dde1');
-                p.rect(swatchX, legendY, 16, 8);
+                p.rect(legendX, legendY, missingSegmentW, 8);
                 p.fill('#4f4a45');
-                p.textAlign(p.LEFT, p.TOP);
-                p.text(missingLabel, swatchX + 22, legendY - 1, swatchGap - 22, 28);
+                p.textSize(11);
+                p.textAlign(p.CENTER, p.TOP);
+                p.text(missingLabel, legendX + missingSegmentW / 2, legendY + 10);
             }
         },
 
@@ -697,7 +698,7 @@
                 focusedRatingRange.minValue.toFixed(1),
                 focusedRatingRange.maxValue.toFixed(1),
                 ratingColorRamp,
-                'no rating'
+                'no reviews'
             );
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);

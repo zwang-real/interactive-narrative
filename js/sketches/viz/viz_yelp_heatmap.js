@@ -3,7 +3,7 @@
     var REVIEW_BINS = [0, 100, 250, 500, 750, 1000];
     var RATING_BINS = [1.0, 2.0, 3.0, 3.5, 4.0, 4.5, 5.01];
     var CLOSED_HEX = '#7e2954';
-    var OPEN_HEX = '#94cbec';
+    var OPEN_HEX = '#0b6fa4';
     var CONTROL_TEXT = '#4f4a45';
 
     function formatCompactNumber(value) {
@@ -14,10 +14,15 @@
         return String(value);
     }
 
+    function paleBaseFor(baseHex) {
+        return baseHex === CLOSED_HEX ? '#f5e8ee' : '#edf6fb';
+    }
+
     function countColor(p, t, baseHex) {
+        var paleBase = paleBaseFor(baseHex);
         var stops = [
-            { at: 0, color: p.color('#edf6fb') },
-            { at: 0.45, color: p.lerpColor(p.color('#edf6fb'), p.color(baseHex), 0.4) },
+            { at: 0, color: p.color(paleBase) },
+            { at: 0.45, color: p.lerpColor(p.color(paleBase), p.color(baseHex), 0.4) },
             { at: 1, color: p.color(baseHex) }
         ];
         var clamped = Math.max(0, Math.min(1, t));
@@ -487,7 +492,11 @@
                         var finalColor = countColor(p, t, baseHex);
                         var stagger = (rowIndex + colIndex) * 0.035;
                         var cellReveal = smoothstep((reveal - stagger) / 0.62);
-                        p.fill(p.lerpColor(p.color('#edf6fb'), finalColor, cellReveal));
+                        if (count > 0) {
+                            p.fill(p.lerpColor(p.color(paleBaseFor(baseHex)), finalColor, cellReveal));
+                        } else {
+                            p.noFill();
+                        }
                         p.stroke('#ffffff');
                         p.strokeWeight(2);
                         p.rect(x0, y0, cellW, cellH, 6);
