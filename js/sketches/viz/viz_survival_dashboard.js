@@ -2,7 +2,7 @@
 (function () {
 
     var COL_HIGH   = '#E69F00';
-    var COL_LOW    = '#0072B2';
+    var COL_LOW    = '#9E9B95';
     var COL_BG     = '#ffffff';
     var COL_BTN    = '#f0ede8';
     var COL_BTN_A  = '#e6e2dc';
@@ -258,7 +258,7 @@
         var labels = { delivery: 'Delivery', takeout: 'Takeout', price_range: 'Price Range', parking: 'Parking', cuisine: 'Cuisine Type' };
         var oX = manager.offsetX || 0, oY = manager.offsetY || 0;
         p.noStroke();
-        p.fill(COL_TEXT); p.textFont('Spectral SC'); p.textSize(FONT_TITLE);
+        p.fill(COL_TEXT); p.textFont('Spectral'); p.textSize(FONT_TITLE);
         p.textAlign(p.LEFT, p.TOP);
         p.text('Survival Rate by ' + (labels[activeVar] || activeVar), oX + 16, oY + 16);
         p.fill(COL_MUTED); p.textFont('IBM Plex Mono'); p.textSize(FONT_SMALL);
