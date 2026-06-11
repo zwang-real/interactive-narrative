@@ -180,6 +180,32 @@
         return hovered;
     }
 
+    function distanceToBox(x, y, box) {
+        var dx = x < box.minX ? box.minX - x : (x > box.maxX ? x - box.maxX : 0);
+        var dy = y < box.minY ? box.minY - y : (y > box.maxY ? y - box.maxY : 0);
+        return Math.sqrt(dx * dx + dy * dy);
+    }
+
+    function findNearestFeature(p, features, maxDistance) {
+        var nearest = null;
+        var nearestDistance = Infinity;
+
+        for (var i = 0; i < features.length; i++) {
+            var feature = features[i];
+            if (!feature.bbox) continue;
+
+            var distance = distanceToBox(p.mouseX, p.mouseY, feature.bbox);
+            if (distance > maxDistance) continue;
+            if (distance < nearestDistance || (distance === nearestDistance && nearest && feature.area < nearest.area)) {
+                nearest = feature;
+                nearestDistance = distance;
+            }
+        }
+
+        return nearest;
+    }
+
+
     function drawFeature(p, feature) {
         feature.polygons.forEach(function (polygon) {
             if (!polygon.length || polygon[0].length < 3) return;
@@ -221,6 +247,47 @@
         p.textSize(MAP_LABEL_SIZE);
         p.fill('#4f4a45');
         p.text(detailText, x, y + 30, maxWidth, 48);
+    }
+
+    function drawHoverCallout(p, x, y, lines, bounds) {
+        if (!lines || !lines.length) return;
+
+        var paddingX = 12;
+        var paddingY = 9;
+        var lineH = 18;
+        var boxW = 170;
+        var boxH = paddingY * 2 + lineH * lines.length;
+        var boxX = x + 16;
+        var boxY = y - boxH - 16;
+
+        if (bounds) {
+            if (boxX + boxW > bounds.right) boxX = x - boxW - 16;
+            if (boxX < bounds.left) boxX = bounds.left;
+            if (boxY < bounds.top) boxY = y + 16;
+            if (boxY + boxH > bounds.bottom) boxY = bounds.bottom - boxH;
+        }
+
+        p.noStroke();
+        p.fill(251, 250, 247, 242);
+        p.rect(boxX, boxY, boxW, boxH, 6);
+        p.stroke('#d9d2c8');
+        p.strokeWeight(1);
+        p.noFill();
+        p.rect(boxX, boxY, boxW, boxH, 6);
+
+        p.noStroke();
+        p.textFont('IBM Plex Mono');
+        p.textAlign(p.LEFT, p.TOP);
+        lines.forEach(function (line, index) {
+            p.fill(index === 0 ? '#0072B2' : '#9F4A00');
+            p.textStyle(p.BOLD);
+            p.textSize(13);
+            p.text(line.label, boxX + paddingX, boxY + paddingY + lineH * index);
+            p.fill('#1e1b18');
+            p.textAlign(p.RIGHT, p.TOP);
+            p.text(line.value, boxX + boxW - paddingX, boxY + paddingY + lineH * index);
+            p.textAlign(p.LEFT, p.TOP);
+        });
     }
 
     function buildSharedYears(housingData, yelpData) {
@@ -428,7 +495,7 @@
             progress = years.length > 1 ? index / (years.length - 1) : 1;
 
             p.textAlign(p.CENTER, p.CENTER);
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(MAP_LABEL_SIZE);
             p.fill(45);
@@ -523,7 +590,7 @@
             }
 
             var projectedFeatures = projectFeatures(geoData, buildProjection(geoData.bounds, panel.mapX, panel.mapY, panel.mapW, panel.mapH));
-            var hoveredFeature = findHoveredFeature(p, projectedFeatures);
+            var hoveredFeature = findHoveredFeature(p, projectedFeatures) || findNearestFeature(p, projectedFeatures, 18);
             return hoveredFeature ? hoveredFeature.zip : null;
         },
 
@@ -536,7 +603,7 @@
             p.noStroke();
             p.fill('#111111');
             p.textAlign(p.CENTER, p.TOP);
-            p.textFont('Spectral');
+            p.textFont('Spectral SC');
             p.textStyle(p.BOLD);
             p.textSize(MAP_TITLE_SIZE);
             p.text(config.title, panel.x + panel.w / 2, panel.y + 14);
@@ -558,10 +625,12 @@
             });
 
             projectedFeatures.forEach(function (feature) {
-                var fontSize = feature.labelScale < 0.017 ? 7 : (feature.labelScale < 0.03 ? 8 : 10);
                 var showLabel = selectedZip === feature.zip;
+                var metric = config.values[feature.zip];
+                var hasMetric = metric !== null && metric !== undefined;
+                var metricLabel = hasMetric && config.mapLabel ? config.mapLabel(metric) : (config.missingMapLabel || 'no data');
 
-                if (!showLabel) return;
+                if (!showLabel || !metricLabel) return;
 
                 p.stroke(255, 235);
                 p.strokeWeight(3);
@@ -570,11 +639,11 @@
                 p.textStyle(p.BOLD);
                 p.textAlign(p.CENTER, p.CENTER);
                 p.textSize(MAP_LABEL_SIZE);
-                p.text(feature.zip, feature.labelX, feature.labelY);
+                p.text(metricLabel, feature.labelX, feature.labelY);
             });
 
             var selectedMetric = selectedZip ? config.values[selectedZip] : null;
-            var headerText = selectedZip ? 'ZIP ' + selectedZip : config.defaultHeader;
+            var headerText = selectedMetric && config.hoverHeader ? config.hoverHeader(selectedMetric) : config.defaultHeader;
             var detailText = selectedMetric ? config.hoverDetail(selectedMetric) : config.defaultDetail;
             drawInfoBlock(p, panel.x + 20, panel.mapY + panel.mapH + 20, headerText, detailText, panel.w - 40);
 
@@ -632,7 +701,7 @@
                 this.getHoveredZipForPanel(p, rightPanel, focusedGeoData);
 
             p.push();
-            this.drawPanel(p, manager, leftPanel, {
+            var selectedRentMetric = this.drawPanel(p, manager, leftPanel, {
                 title: 'Rent Prices by Year',
                 geoData: focusedGeoData,
                 values: housingYear.zipValues,
@@ -643,15 +712,22 @@
                 valueAccessor: function (value) { return typeof value === 'number' ? value : null; },
                 defaultHeader: 'Philadelphia overall',
                 defaultDetail: formatCurrency(housingYear.cityAverage || 0) + ' average SAFMR',
-                hoverDetail: function (metric) {
-                    return formatCurrency(metric) + ' average SAFMR';
+                hoverHeader: function (metric) {
+                    return formatCurrency(metric) + ' rent';
                 },
+                hoverDetail: function (metric) {
+                    return 'Average SAFMR in selected area';
+                },
+                mapLabel: function (metric) {
+                    return formatCurrency(metric);
+                },
+                missingMapLabel: 'no rent',
                 legendTitle: 'Rent prices',
                 rangeLabelLeft: 'low',
                 rangeLabelRight: 'high'
             });
 
-            this.drawPanel(p, manager, rightPanel, {
+            var selectedRatingMetric = this.drawPanel(p, manager, rightPanel, {
                 title: 'Restaurant Ratings by Year',
                 geoData: focusedGeoData,
                 values: yelpYear.zipValues,
@@ -662,9 +738,16 @@
                 valueAccessor: function (value) { return value ? value.avgRating : null; },
                 defaultHeader: 'Philadelphia overall',
                 defaultDetail: yelpYear.cityAverage ? (yelpYear.cityAverage.toFixed(2) + ' average restaurant rating') : 'No ratings for this year',
-                hoverDetail: function (metric) {
-                    return metric.avgRating.toFixed(2) + ' average rating';
+                hoverHeader: function (metric) {
+                    return metric.avgRating.toFixed(2) + ' rating';
                 },
+                hoverDetail: function (metric) {
+                    return 'Average restaurant rating in selected area';
+                },
+                mapLabel: function (metric) {
+                    return metric.avgRating.toFixed(2);
+                },
+                missingMapLabel: 'no rating',
                 legendTitle: 'Restaurant ratings',
                 rangeLabelLeft: 'low',
                 rangeLabelRight: 'high'
@@ -702,6 +785,24 @@
             );
 
             this.drawBottomSlider(p, manager, years, selectedYear, left, top, w, h);
+
+            if (hoveredZip) {
+                drawHoverCallout(p, p.mouseX, p.mouseY, [
+                    {
+                        label: 'Rent',
+                        value: selectedRentMetric ? formatCurrency(selectedRentMetric) : 'no rent'
+                    },
+                    {
+                        label: 'Rating',
+                        value: selectedRatingMetric ? selectedRatingMetric.avgRating.toFixed(2) : 'no rating'
+                    }
+                ], {
+                    left: left,
+                    top: top,
+                    right: left + w,
+                    bottom: top + h
+                });
+            }
             p.pop();
         }
     };

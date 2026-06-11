@@ -6,6 +6,13 @@
     var CLOSED_HEX = '#b24852';
     var PANEL_STROKE = '#4f4a45';
     var DEFAULT_YEARS = [];
+    var CENTER_CITY_LON = -75.1638;
+    var CENTER_CITY_LAT = 39.9526;
+    var FOCUS_ZIPS = ['19104', '19130', '19103', '19102', '19123', '19107', '19106', '19146', '19147', '19132', '19133', '19125', '19121', '19122'];
+    var FOCUS_ZIP_SET = FOCUS_ZIPS.reduce(function (set, zip) {
+        set[zip] = true;
+        return set;
+    }, {});
 
     for (var year = 2005; year <= 2022; year++) DEFAULT_YEARS.push(year);
 
@@ -81,6 +88,24 @@
         return {
             x: projection.x + (lon - projection.minLon) * projection.scale,
             y: projection.y + projection.drawH - (lat - projection.minLat) * projection.scale
+        };
+    }
+
+    function applyZoomProjection(projection, mapX, mapY, mapW, mapH, zoom) {
+        zoom = Math.max(1, Math.min(2.6, zoom || 1));
+        if (zoom === 1) return projection;
+
+        var focus = projectLonLat(CENTER_CITY_LON, CENTER_CITY_LAT, projection);
+        var targetX = mapX + mapW * 0.46;
+        var targetY = mapY + mapH * 0.54;
+
+        return {
+            minLon: projection.minLon,
+            minLat: projection.minLat,
+            scale: projection.scale * zoom,
+            x: targetX - (focus.x - projection.x) * zoom,
+            y: targetY - (focus.y - projection.y) * zoom,
+            drawH: projection.drawH * zoom
         };
     }
 
@@ -176,8 +201,90 @@
         return (value * 100).toFixed(1) + '%';
     }
 
+    function formatSigned(value) {
+        value = Math.round(value || 0);
+        if (value > 0) return '+' + value.toLocaleString();
+        if (value < 0) return value.toLocaleString();
+        return '0';
+    }
+
+    function formatCompactCount(value) {
+        return Math.round(value || 0).toLocaleString();
+    }
+
     function drawWrappedText(p, text, x, y, w, h) {
         p.text(String(text || ''), x, y, w, h);
+    }
+
+    function filterGeoData(boundaryData) {
+        if (!boundaryData || !boundaryData.features || !boundaryData.features.length) return boundaryData;
+
+        var features = boundaryData.features.filter(function (feature) {
+            return FOCUS_ZIP_SET[feature.zip];
+        });
+        if (!features.length) return boundaryData;
+
+        var minLon = Infinity;
+        var maxLon = -Infinity;
+        var minLat = Infinity;
+        var maxLat = -Infinity;
+
+        features.forEach(function (feature) {
+            feature.polygons.forEach(function (polygon) {
+                polygon.forEach(function (ring) {
+                    ring.forEach(function (point) {
+                        if (point[0] < minLon) minLon = point[0];
+                        if (point[0] > maxLon) maxLon = point[0];
+                        if (point[1] < minLat) minLat = point[1];
+                        if (point[1] > maxLat) maxLat = point[1];
+                    });
+                });
+            });
+        });
+
+        return {
+            features: features,
+            bounds: {
+                minLon: minLon,
+                maxLon: maxLon,
+                minLat: minLat,
+                maxLat: maxLat
+            }
+        };
+    }
+
+    function drawRestaurantTooltip(p, focus, x, y, maxX) {
+        if (!focus) return;
+
+        var point = focus.point || focus;
+        var status = point.isOpen ? 'Open' : 'Closed';
+        var lines = [
+            point.name || 'Restaurant',
+            status + ' | ' + point.rating.toFixed(1) + ' stars | ' + point.reviewCount + ' reviews'
+        ];
+        var boxW = Math.min(300, Math.max(210, (point.name || '').length * 7 + 28));
+        var boxH = 58;
+        var boxX = Math.min(x + 14, maxX - boxW - 8);
+        var boxY = Math.max(10, y - boxH - 12);
+
+        p.noStroke();
+        p.fill(255, 248);
+        p.rect(boxX, boxY, boxW, boxH, 6);
+        p.stroke(point.isOpen ? OPEN_HEX : CLOSED_HEX);
+        p.strokeWeight(2);
+        p.noFill();
+        p.rect(boxX, boxY, boxW, boxH, 6);
+
+        p.noStroke();
+        p.fill('#111111');
+        p.textFont('IBM Plex Mono');
+        p.textAlign(p.LEFT, p.TOP);
+        p.textStyle(p.BOLD);
+        p.textSize(12);
+        p.text(lines[0], boxX + 10, boxY + 9, boxW - 20, 18);
+        p.textStyle(p.NORMAL);
+        p.fill('#4f4a45');
+        p.text(lines[1], boxX + 10, boxY + 32, boxW - 20, 18);
     }
 
     window.VizWhereTheyStand = {
@@ -254,11 +361,21 @@
                 p.mouseY >= slider.speedY && p.mouseY <= slider.speedY + slider.speedH;
             var onTicks = p.mouseX >= slider.x - 8 && p.mouseX <= slider.x + slider.w + 8 &&
                 p.mouseY >= slider.y + 8 && p.mouseY <= slider.y + 32;
+            var onZoomOut = p.mouseX >= slider.zoomOutX && p.mouseX <= slider.zoomOutX + slider.zoomSize &&
+                p.mouseY >= slider.zoomY && p.mouseY <= slider.zoomY + slider.zoomSize;
+            var onZoomIn = p.mouseX >= slider.zoomInX && p.mouseX <= slider.zoomInX + slider.zoomSize &&
+                p.mouseY >= slider.zoomY && p.mouseY <= slider.zoomY + slider.zoomSize;
+            var onReset = p.mouseX >= slider.resetX && p.mouseX <= slider.resetX + slider.resetW &&
+                p.mouseY >= slider.zoomY && p.mouseY <= slider.zoomY + slider.zoomSize;
 
             if (justReleased) manager.whereTheyStandSliderDragging = false;
             if (justPressed && onPlay) manager.whereTheyStandPlaying = !manager.whereTheyStandPlaying;
             if (justPressed && onSlow) manager.whereTheyStandSpeed = 'slow';
             if (justPressed && onFast) manager.whereTheyStandSpeed = 'fast';
+            if (!manager.whereTheyStandZoom) manager.whereTheyStandZoom = 1;
+            if (justPressed && onZoomOut) manager.whereTheyStandZoom = Math.max(1, manager.whereTheyStandZoom - 0.4);
+            if (justPressed && onZoomIn) manager.whereTheyStandZoom = Math.min(2.6, manager.whereTheyStandZoom + 0.4);
+            if (justPressed && onReset) manager.whereTheyStandZoom = 1;
             if (justPressed && (onTrack || onKnob)) manager.whereTheyStandSliderDragging = true;
             if (justPressed && onTicks) {
                 var tickT = (p.mouseX - slider.x) / slider.w;
@@ -297,7 +414,13 @@
                 speedX: x + 52,
                 speedY: y,
                 speedW: 96,
-                speedH: 28
+                speedH: 28,
+                zoomOutX: x,
+                zoomInX: x + 34,
+                resetX: x + 68,
+                zoomY: y - 40,
+                zoomSize: 28,
+                resetW: 54
             };
 
             this.handleControls(p, manager, years, slider);
@@ -373,6 +496,25 @@
             p.textStyle(p.BOLD);
             p.textSize(15);
             p.text(String(selectedYear), slider.x + slider.w / 2, slider.y - 8);
+
+            if (!manager.whereTheyStandZoom) manager.whereTheyStandZoom = 1;
+            p.textFont('IBM Plex Mono');
+            p.textSize(15);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.stroke('#111111');
+            p.strokeWeight(1.1);
+            p.fill(manager.whereTheyStandZoom <= 1 ? '#f2f0eb' : '#ffffff');
+            p.rect(slider.zoomOutX, slider.zoomY, slider.zoomSize, slider.zoomSize);
+            p.fill('#ffffff');
+            p.rect(slider.zoomInX, slider.zoomY, slider.zoomSize, slider.zoomSize);
+            p.rect(slider.resetX, slider.zoomY, slider.resetW, slider.zoomSize);
+            p.noStroke();
+            p.fill(manager.whereTheyStandZoom <= 1 ? '#9b958e' : '#111111');
+            p.text('-', slider.zoomOutX + slider.zoomSize / 2, slider.zoomY + slider.zoomSize / 2 - 1);
+            p.fill('#111111');
+            p.text('+', slider.zoomInX + slider.zoomSize / 2, slider.zoomY + slider.zoomSize / 2 - 1);
+            p.textSize(12);
+            p.text('reset', slider.resetX + slider.resetW / 2, slider.zoomY + slider.zoomSize / 2);
         },
 
         getYearData: function (manager, selectedYear) {
@@ -383,6 +525,47 @@
         getYears: function (manager, fallbackYears) {
             var yearData = manager.yelpZipYearData || {};
             return yearData.years && yearData.years.length ? yearData.years : fallbackYears;
+        },
+
+        getYearStats: function (manager, selectedYear) {
+            var current = this.getYearData(manager, selectedYear);
+            var years = this.getYears(manager, DEFAULT_YEARS);
+            var yearIndex = years.indexOf(selectedYear);
+            var previousYear = yearIndex > 0 ? years[yearIndex - 1] : null;
+            var previous = previousYear ? this.getYearData(manager, previousYear) : null;
+
+            function totals(yearData) {
+                var values = yearData && yearData.zipValues ? yearData.zipValues : {};
+                var activeRestaurants = 0;
+                var reviews = 0;
+                var activeZips = 0;
+
+                Object.keys(values).forEach(function (zip) {
+                    var metric = values[zip];
+                    if (!metric) return;
+                    activeRestaurants += +metric.businessCount || 0;
+                    reviews += +metric.reviewCount || 0;
+                    activeZips += 1;
+                });
+
+                return {
+                    activeRestaurants: activeRestaurants,
+                    reviews: reviews,
+                    activeZips: activeZips
+                };
+            }
+
+            var currentTotals = totals(current);
+            var previousTotals = previous ? totals(previous) : null;
+
+            return {
+                activeRestaurants: currentTotals.activeRestaurants,
+                reviews: currentTotals.reviews,
+                activeZips: currentTotals.activeZips,
+                restaurantChange: previousTotals ? currentTotals.activeRestaurants - previousTotals.activeRestaurants : 0,
+                reviewChange: previousTotals ? currentTotals.reviews - previousTotals.reviews : 0,
+                previousYear: previousYear
+            };
         },
 
         draw: function (p, manager) {
@@ -406,15 +589,16 @@
             var mapW = w + 40;
             var mapH = h - 78;
             var sliderY = mapY + mapH + 16;
-            var projection = geoData && geoData.bounds
+            var baseProjection = geoData && geoData.bounds
                 ? buildBoundsProjection(geoData.bounds, mapX, mapY, mapW, mapH)
                 : buildProjection(points, mapX, mapY, mapW, mapH);
+            var projection = applyZoomProjection(baseProjection, mapX, mapY, mapW, mapH, manager.whereTheyStandZoom || 1);
             var hovered = null;
             var justPressed;
 
             p.push();
             p.noStroke();
-            p.fill(255);
+            p.fill('#fbfaf7');
             p.rect(left - 24, top - 18, w + 48, h + 46);
 
             justPressed = p.mouseIsPressed && !manager.whereTheyStandMouseWasPressed;
@@ -430,7 +614,7 @@
                     ? p.map(Math.sqrt(currentReviews), 1, 120, 3.4, 8.6, true)
                     : 2.9;
                 var color = point.isOpen ? p.color(OPEN_HEX) : p.color(CLOSED_HEX);
-                var alpha = zipMetric ? (point.isOpen ? 156 : 190) : 54;
+                var alpha = zipMetric ? (point.isOpen ? 156 : 190) : (point.isOpen ? 92 : 126);
 
                 p.noStroke();
                 p.fill(p.red(color), p.green(color), p.blue(color), alpha);
@@ -441,26 +625,14 @@
                 }
             });
 
-            if (justPressed && hovered) manager.whereTheyStandSelectedRestaurantId = hovered.point.id;
-
-            var selected = null;
-            if (manager.whereTheyStandSelectedRestaurantId) {
-                points.some(function (point) {
-                    if (point.id === manager.whereTheyStandSelectedRestaurantId) {
-                        selected = point;
-                        return true;
-                    }
-                    return false;
-                });
-            }
-
-            if (hovered || selected) {
-                var focus = hovered || { point: selected };
-                var focusXY = hovered || projectPoint(focus.point, projection);
+            if (hovered) {
+                var focus = hovered;
+                var focusXY = hovered;
                 p.noFill();
                 p.stroke('#111111');
                 p.strokeWeight(1.8);
-                p.circle(focusXY.x, focusXY.y, 14);
+                p.circle(focusXY.x, focusXY.y, 18);
+                drawRestaurantTooltip(p, focus, focusXY.x, focusXY.y, mapX + mapW);
             }
 
             this.drawSlider(p, manager, years, selectedYear, mapX, sliderY, mapW);
@@ -468,19 +640,20 @@
 
             this.drawSummary(
                 p,
-                selected || (hovered && hovered.point),
+                hovered && hovered.point,
                 data,
                 selectedYearData,
+                this.getYearStats(manager, selectedYear),
                 selectedYear,
                 mapX + mapW - 260,
-                mapY + mapH - 176,
+                mapY + mapH - 300,
                 242
             );
             this.drawLegend(p, mapX + mapW / 2 - 98, sliderY + 56);
             p.pop();
         },
 
-        drawSummary: function (p, selected, data, selectedYearData, selectedYear, x, y, w) {
+        drawSummary: function (p, selected, data, selectedYearData, yearStats, selectedYear, x, y, w) {
             var survival = formatPercent(data.survivalRate || 0);
             var rating = (selectedYearData.cityAverage || data.averageRating || 0).toFixed(2);
             var selectedZipMetric = selected && selectedYearData.zipValues
@@ -509,16 +682,60 @@
 
             p.textStyle(p.BOLD);
             p.textSize(15);
-            p.text(
-                selected
-                    ? selectedYear + ' status: ' + (selected.isOpen ? 'Open' : 'Closed') +
-                        '\nZIP avg rating: ' + (selectedZipMetric ? selectedZipMetric.avgRating.toFixed(2) : 'No reviews')
-                    : selectedYear + ' survival rate: ' + survival + '\nAvg. rating: ' + rating,
-                x,
-                y + 152,
-                w,
-                64
-            );
+            if (selected) {
+                p.text(
+                    selectedYear + ' status: ' + (selected.isOpen ? 'Open' : 'Closed') +
+                        '\nZIP avg rating: ' + (selectedZipMetric ? selectedZipMetric.avgRating.toFixed(2) : 'No reviews'),
+                    x,
+                    y + 152,
+                    w,
+                    64
+                );
+                p.fill('#1e1b18');
+                p.textStyle(p.BOLD);
+                p.textSize(15);
+                p.text(selectedYear + ' review activity', x, y + 224, w, 22);
+                p.fill('#4f4a45');
+                p.textStyle(p.NORMAL);
+                p.textSize(13);
+                p.text(
+                    formatCompactCount(yearStats.activeRestaurants) + ' restaurants, ' +
+                        formatCompactCount(yearStats.reviews) + ' reviews\n' +
+                        'Change: ' + formatSigned(yearStats.restaurantChange) +
+                        ' restaurants, ' + formatSigned(yearStats.reviewChange) + ' reviews',
+                    x,
+                    y + 246,
+                    w,
+                    52
+                );
+            } else {
+                p.fill('#1e1b18');
+                p.text('Survival rate', x, y + 150, w, 22);
+                p.fill(HIGH_RATING_HEX);
+                p.textSize(24);
+                p.text(survival, x, y + 171, w, 32);
+                p.fill('#4f4a45');
+                p.textSize(15);
+                p.text('Avg. rating: ' + rating, x, y + 204, w, 24);
+
+                p.fill('#1e1b18');
+                p.textStyle(p.BOLD);
+                p.textSize(15);
+                p.text(selectedYear + ' review activity', x, y + 238, w, 22);
+                p.fill('#4f4a45');
+                p.textStyle(p.NORMAL);
+                p.textSize(13);
+                p.text(
+                    formatCompactCount(yearStats.activeRestaurants) + ' restaurants, ' +
+                        formatCompactCount(yearStats.reviews) + ' reviews\n' +
+                        'Change vs. prior year: ' + formatSigned(yearStats.restaurantChange) +
+                        ' restaurants, ' + formatSigned(yearStats.reviewChange) + ' reviews',
+                    x,
+                    y + 260,
+                    w,
+                    52
+                );
+            }
         },
 
         drawLegend: function (p, x, y) {
@@ -529,11 +746,11 @@
             p.noStroke();
             p.fill(OPEN_HEX);
             p.circle(x, y, 8);
-            p.fill('#4f4a45');
+            p.fill(OPEN_HEX);
             p.text('Open', x + 13, y);
             p.fill(CLOSED_HEX);
             p.circle(x + 72, y, 8);
-            p.fill('#4f4a45');
+            p.fill(CLOSED_HEX);
             p.text('Closed', x + 85, y);
         }
     };

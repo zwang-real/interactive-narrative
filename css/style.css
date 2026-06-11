@@ -1,4 +1,5 @@
 :root {
+  --page-bg: #fbfaf7;
   --page-left-gutter: 40px;
   --page-right-gutter: 20px;
   --article-width: min(70vw, 800px);
@@ -10,6 +11,14 @@
 
 body {
   font-family: "Spectral", Georgia, serif;
+  background: var(--page-bg);
+}
+
+html,
+.container,
+#graphic,
+#sections {
+  background: var(--page-bg);
 }
 
 #site-header {
@@ -18,8 +27,8 @@ body {
   left: 0;
   right: 0;
   height: 52px;
-  background: #fff;
-  border-bottom: 1px solid #e8e8e8;
+  background: var(--page-bg);
+  border-bottom: 1px solid #eee9df;
   display: flex;
   align-items: center;
   gap: 16px;
@@ -79,7 +88,7 @@ body {
     top: 52px;
     width: 100%;
     z-index: 100;
-    background: white;
+    background: var(--page-bg);
   }
   .step {
     margin-bottom: 80px;
@@ -100,17 +109,16 @@ body {
 #sections {
   position: relative;
   display: block;
-  width: var(--viz-text-width);
+  width: 100%;
   margin-left: 0;
   margin-right: 0;
   top: 0px;
   z-index: 90;
   padding-bottom: 0;
-  will-change: width;
 }
 
 #sections > .step {
-  width: 100%;
+  width: var(--viz-text-width);
 }
 
 .step:last-child {
@@ -132,6 +140,7 @@ body {
   font-size: clamp(15px, 0.4vw + 11px, 21px);
   line-height: 1.65;
   color: #222;
+  transition: opacity 0.2s ease;
 }
 
 .step.compact-text-section {
@@ -174,24 +183,22 @@ body {
   border-radius: 8px;
   margin-top: 2rem;
   display: block;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .sticky-image-group {
-  width: 100%;
+  width: var(--article-width);
   margin: 0 auto var(--section-gap);
-  margin-left: auto;
-  margin-right: auto;
-  display: grid;
-  grid-template-columns: minmax(280px, 0.95fr) minmax(320px, 1.05fr);
-  align-items: start;
-  gap: clamp(32px, 5vw, 64px);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0;
 }
 
 .sticky-copy-flow {
   min-width: 0;
   width: 100%;
-  max-width: 520px;
-  justify-self: start;
+  max-width: none;
 }
 
 #graphic .sticky-copy-flow .step[data-layout="full-text"] {
@@ -215,6 +222,11 @@ body {
   margin-top: 0;
 }
 
+.step.long-viz-step {
+  min-height: 165vh;
+  margin-bottom: calc(var(--section-gap) * 1.75);
+}
+
 .step.followup-step {
   min-height: auto;
   margin-top: calc(var(--section-gap) * -0.55);
@@ -224,17 +236,18 @@ body {
 }
 
 .sticky-side-image {
-  position: sticky;
-  top: 92px;
+  position: static;
   min-width: 0;
-  height: calc(100vh - 124px);
-  display: flex;
-  align-items: center;
+  height: auto;
+  margin-top: 2rem;
+  display: block;
+  transition: opacity 0.2s ease, visibility 0.2s ease;
 }
 
 .sticky-side-image img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  max-width: 560px;
+  aspect-ratio: 21 / 9;
   object-fit: cover;
   border-radius: 8px;
   display: block;
@@ -272,6 +285,12 @@ body {
   top: 68px;
   bottom: 0;
   z-index: 100;
+  background: var(--page-bg);
+  transition:
+    left 0.45s ease,
+    right 0.45s ease,
+    opacity 0.45s ease,
+    transform 0.45s ease;
 }
 
 /* Smooth fade for canvas */
@@ -326,20 +345,11 @@ body {
   font-family: 'Spectral SC', Georgia, serif;
 }
 
-/* full-text layout: hide vis, center and expand text column */
-#graphic.layout-full-text {
-  display: flex;
-  justify-content: center;
-}
+/* full-text layout: fade the viz away while individual text steps center themselves */
 #graphic.layout-full-text #vis {
-  display: none;
-}
-#graphic.layout-full-text #sections {
-  width: var(--feature-width);
-  margin-left: auto;
-  margin-right: auto;
-  display: block;
-  transition: none;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(8px);
 }
 
 /* full-viz layout: keep sections in flow but invisible */
@@ -355,10 +365,30 @@ body {
 #graphic.layout-viz-left #sections {
   display: block;
   margin-left: calc(var(--viz-left-edge) + 40px);
+  transition: margin-left 0.45s ease, width 0.45s ease;
 }
 #graphic.layout-viz-left #vis {
   left: var(--page-left-gutter);
   right: calc(100vw - var(--viz-left-edge) + var(--page-right-gutter));
+}
+
+#graphic:not(.layout-full-text) .section-image,
+#graphic:not(.layout-full-text) .sticky-side-image {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#graphic:not(.layout-full-text) .step[data-layout="full-text"] {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#graphic:not(.layout-full-text) #sections > .step:not(.is-active-step) {
+  opacity: 0 !important;
+  visibility: hidden;
+  pointer-events: none;
 }
 
 @media (max-width: 700px) {

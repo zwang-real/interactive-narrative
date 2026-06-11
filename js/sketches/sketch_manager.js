@@ -64,8 +64,8 @@ function startP5() {
 
                 var pr = self.state.progress || 0;
                 var activeIdx = self.state.activeIndex || 0;
-                var ease = 0.05;
-                var travel = 20;
+                var ease = 0.035;
+                var travel = 0;
                 var tx, op;
                 function smoothstep(t) { return t * t * (3 - 2 * t); }
                 if (pr < ease) {
@@ -81,17 +81,6 @@ function startP5() {
                 // canvas transition
                 p.canvas.style.transform = 'translateY(' + tx.toFixed(2) + 'px)';
                 p.canvas.style.opacity = op.toFixed(3);
-
-                var isFullText = !!(document.querySelector('#graphic.layout-full-text'));
-
-                // ── KEY FIX: reset EVERY step each frame, so no step keeps a
-                // stale opacity/transform from a previous scroll position. ──
-                // All text steps stay fully visible. Only the canvas fades/transitions.
-                var allSteps = document.querySelectorAll('#sections .step');
-                allSteps.forEach(function (step) {
-                    step.style.opacity = '1';
-                    step.style.transform = 'none';
-                });
 
                 var dbg = document.getElementById('debug-state');
                 if (dbg) {

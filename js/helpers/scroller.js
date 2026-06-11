@@ -22,8 +22,12 @@
                 var rect = el.getBoundingClientRect();
                 var top = rect.top + window.pageYOffset;
                 if (self.trigger === 'center') {
+                    if (el.dataset && el.dataset.activateAt === 'enter') {
+                        self.sectionPositions.push(top - window.innerHeight * 0.25);
+                        return;
+                    }
                     var centerY = top + (rect.height / 2);
-                    self.sectionPositions.push(centerY - window.innerHeight * 0.4);
+                    self.sectionPositions.push(centerY + window.innerHeight * 0.06);
                 } else {
                     self.sectionPositions.push(top);
                 }
@@ -64,7 +68,7 @@
             if (self.trigger === 'center') {
                 var sectionCenter = elemTop + elemHeight / 2;
                 var viewportCenter = window.pageYOffset + window.innerHeight / 2;
-                var band = window.innerHeight * 0.4;
+                var band = window.innerHeight * 0.26;
                 progress = Math.max(0, Math.min(1, (viewportCenter - sectionCenter + band) / (2 * band)));
             } else {
                 progress = Math.max(0, Math.min(1, (triggerY - elemTop) / elemHeight));

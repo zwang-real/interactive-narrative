@@ -1,12 +1,13 @@
-// Yelp restaurant review-count vs rating heatmap, with yearly playback.
+// Yelp restaurant review-count vs rating heatmap.
 (function () {
-    var REVIEW_BINS = [0, 100, 250, 500, 750, 1000];
+    var REVIEW_BINS = [0, 25, 50, 100, 250, 500, 1000, Infinity];
     var RATING_BINS = [1.0, 2.0, 3.0, 3.5, 4.0, 4.5, 5.01];
     var CLOSED_HEX = '#7e2954';
-    var OPEN_HEX = '#0b6fa4';
+    var OPEN_HEX = '#064a6d';
     var CONTROL_TEXT = '#4f4a45';
 
     function formatCompactNumber(value) {
+        if (value === Infinity) return '';
         if (value >= 1000) {
             var compact = value / 1000;
             return (compact % 1 === 0 ? compact.toFixed(0) : compact.toFixed(1)) + 'k';
@@ -15,7 +16,7 @@
     }
 
     function paleBaseFor(baseHex) {
-        return baseHex === CLOSED_HEX ? '#f5e8ee' : '#edf6fb';
+        return baseHex === CLOSED_HEX ? '#f5e8ee' : '#e8f1f5';
     }
 
     function countColor(p, t, baseHex) {
@@ -50,6 +51,7 @@
 
     function formatReviewBin(index) {
         if (index < 0 || index >= REVIEW_BINS.length - 1) return '';
+        if (REVIEW_BINS[index + 1] === Infinity) return formatCompactNumber(REVIEW_BINS[index]) + '+';
         return formatCompactNumber(REVIEW_BINS[index]) + '-\n' + formatCompactNumber(REVIEW_BINS[index + 1]);
     }
 
@@ -186,6 +188,10 @@
             totalClosed: totalClosed,
             total: totalOpen + totalClosed
         };
+    }
+
+    function formatPercent(value) {
+        return Math.round(value * 100) + '%';
     }
 
     function pointInRect(px, py, rect) {
@@ -382,7 +388,7 @@
             var index = Math.max(0, years.indexOf(selectedYear));
             var progress = years.length > 1 ? index / (years.length - 1) : 1;
 
-            p.textFont('Spectral');
+            p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
             p.textSize(15);
             p.fill('#1e1b18');
@@ -450,35 +456,50 @@
             var h = (manager.height || 520) - 92;
             var gutter = 44;
             var panelW = (w - gutter) / 2;
-            var gridLeft = left + 86;
-            var gridTop = top + 62;
-            var gridW = panelW - 96;
+            var gridTop = top + 104;
+            var gridW = panelW - 104;
             var minGridH = (manager.width || 600) < 460 ? 118 : 220;
-            var gridH = Math.max(minGridH, h - 230);
+            var gridH = Math.max(minGridH, h - 244);
             var cols = REVIEW_BINS.length - 1;
             var rows = RATING_BINS.length - 1;
             var cellW = gridW / cols;
             var cellH = gridH / rows;
-            var leftGridLeft = gridLeft;
+            var leftGridLeft = left + 86;
             var rightGridLeft = left + panelW + gutter + 80;
+            var maxShare = 0;
+
+            data.matrix.forEach(function (row) {
+                row.forEach(function (cell) {
+                    if (data.totalOpen > 0) maxShare = Math.max(maxShare, cell.open / data.totalOpen);
+                    if (data.totalClosed > 0) maxShare = Math.max(maxShare, cell.closed / data.totalClosed);
+                });
+            });
+            maxShare = Math.max(0.001, maxShare);
+
+            function shareForCell(cell, key) {
+                var total = key === 'open' ? data.totalOpen : data.totalClosed;
+                return total > 0 ? cell[key] / total : 0;
+            }
 
             function drawPanel(panelLeft, title, key, baseHex) {
                 p.fill(20);
-                p.textFont('Spectral');
+                p.textFont('Spectral SC');
                 p.textStyle(p.BOLD);
                 p.textSize(22);
                 p.textAlign(p.CENTER, p.TOP);
-                p.text(title, panelLeft + gridW / 2, top);
+                p.text(title, panelLeft + gridW / 2, top + 58);
 
                 p.textFont('IBM Plex Mono');
                 p.textStyle(p.NORMAL);
-                p.textSize(15);
+                p.textSize(12);
                 p.fill(CONTROL_TEXT);
+                p.text('Share of ' + (key === 'open' ? 'open' : 'closed') + ' restaurants', panelLeft + gridW / 2, top + 86);
 
                 for (var c = 0; c < cols; c++) {
-                    var x = panelLeft + c * cellW;
+                    var labelX = panelLeft + c * cellW;
                     p.textAlign(p.CENTER, p.TOP);
-                    p.text(formatReviewBin(c), x + cellW / 2, gridTop + gridH + 12);
+                    p.textSize(11);
+                    p.text(formatReviewBin(c), labelX + cellW / 2, gridTop + gridH + 12);
                 }
 
                 for (var rowIndex = 0; rowIndex < rows; rowIndex++) {
@@ -486,31 +507,37 @@
                         var x0 = panelLeft + colIndex * cellW;
                         var y0 = gridTop + rowIndex * cellH;
                         var dataRow = rows - 1 - rowIndex;
-                        var count = data.matrix[dataRow][colIndex][key];
-                        var t = data.maxCount > 0 ? count / data.maxCount : 0;
-
+                        var cell = data.matrix[dataRow][colIndex];
+                        var count = cell[key];
+                        var share = shareForCell(cell, key);
+                        var t = share / maxShare;
                         var finalColor = countColor(p, t, baseHex);
-                        var stagger = (rowIndex + colIndex) * 0.035;
+                        var stagger = (rowIndex + colIndex) * 0.032;
                         var cellReveal = smoothstep((reveal - stagger) / 0.62);
+
                         if (count > 0) {
                             p.fill(p.lerpColor(p.color(paleBaseFor(baseHex)), finalColor, cellReveal));
+                            p.stroke('#ffffff');
+                            p.strokeWeight(2);
+                            p.rect(x0, y0, cellW, cellH, 6);
                         } else {
                             p.noFill();
+                            p.noStroke();
                         }
-                        p.stroke('#ffffff');
-                        p.strokeWeight(2);
-                        p.rect(x0, y0, cellW, cellH, 6);
 
                         if (count > 0 && cellReveal > 0.58) {
                             var countAlpha = clamp01((cellReveal - 0.58) / 0.42);
-                            var textColor = p.color(t > 0.62 ? '#ffffff' : '#1e1b18');
+                            var textColor = p.color(t > 0.58 ? '#ffffff' : '#1e1b18');
                             textColor.setAlpha(255 * countAlpha);
                             p.noStroke();
                             p.fill(textColor);
                             p.textAlign(p.CENTER, p.CENTER);
                             p.textStyle(p.BOLD);
-                            p.textSize(Math.max(15, Math.min(16, cellW * 0.38)));
-                            p.text(String(count), x0 + cellW / 2, y0 + cellH / 2);
+                            p.textSize(Math.max(11, Math.min(14, cellW * 0.28)));
+                            p.text(formatPercent(share), x0 + cellW / 2, y0 + cellH / 2 - 5);
+                            p.textStyle(p.NORMAL);
+                            p.textSize(Math.max(9, Math.min(11, cellW * 0.22)));
+                            p.text(String(count), x0 + cellW / 2, y0 + cellH / 2 + 10);
                         }
                     }
                 }
@@ -519,34 +546,22 @@
             p.push();
             p.noStroke();
 
-            p.fill(20);
-            p.textFont('Spectral');
+            p.fill('#1e1b18');
+            p.textFont('Spectral SC');
             p.textStyle(p.BOLD);
-            p.textSize(22);
+            p.textSize(24);
             p.textAlign(p.CENTER, p.TOP);
-            p.text('Number of Ratings', left + w / 2, gridTop + gridH + 76);
+            p.text('Ratings and Review Counts Do Not Cleanly Separate Survival', left + w / 2, top - 4);
+
+            p.fill(CONTROL_TEXT);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(13);
+            p.text('Same grid, same scale: darker cells mean more of that group falls in the rating-review bin.', left + w / 2, top + 32);
 
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(15);
-            p.fill('#6d6862');
-            var scopeLabel = 'Total reviews across all years; restaurants with fewer than 1k ratings';
-            p.text(scopeLabel, left + w / 2, gridTop + gridH + 104);
-
-            p.push();
-            p.translate(left - 50, gridTop + gridH / 2);
-            p.rotate(-p.HALF_PI);
-            p.textFont('Spectral');
-            p.textStyle(p.BOLD);
-            p.textSize(22);
-            p.fill(20);
-            p.textAlign(p.CENTER, p.CENTER);
-            p.text('Restaurant Rating', 0, 0);
-            p.pop();
-
-            p.textFont('IBM Plex Mono');
-            p.textStyle(p.NORMAL);
-            p.textSize(15);
+            p.textSize(12);
             p.fill(CONTROL_TEXT);
 
             for (var r = 0; r < rows; r++) {
@@ -558,33 +573,45 @@
             drawPanel(leftGridLeft, 'Open Restaurants', 'open', OPEN_HEX);
             drawPanel(rightGridLeft, 'Closed Restaurants', 'closed', CLOSED_HEX);
 
-            p.noStroke();
-            p.fill('#1e1b18');
+            p.fill(20);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.BOLD);
-            p.textSize(15);
+            p.textSize(19);
             p.textAlign(p.CENTER, p.TOP);
-            p.text('High Ratings and Many Reviews Still Appear Among Closed Restaurants.', left + w / 2, top + 32);
+            p.text('Number of Reviews', left + w / 2, gridTop + gridH + 62);
 
-            var legendX = left + w / 2 - 120;
-            var legendY = top + h - 2;
+            p.push();
+            p.translate(left - 50, gridTop + gridH / 2);
+            p.rotate(-p.HALF_PI);
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.BOLD);
+            p.textSize(19);
+            p.fill(20);
+            p.textAlign(p.CENTER, p.CENTER);
+            p.text('Restaurant Rating', 0, 0);
+            p.pop();
+
+            var legendX = left + w / 2 - 88;
+            var legendY = gridTop + gridH + 100;
             p.noStroke();
             p.fill(OPEN_HEX);
-            p.circle(legendX, legendY + 5, 9);
+            p.circle(legendX, legendY + 5, 10);
             p.fill(CLOSED_HEX);
-            p.circle(legendX + 118, legendY + 5, 9);
+            p.circle(legendX + 92, legendY + 5, 10);
             p.fill(CONTROL_TEXT);
             p.textFont('IBM Plex Mono');
             p.textStyle(p.NORMAL);
-            p.textSize(15);
+            p.textSize(12);
             p.textAlign(p.LEFT, p.CENTER);
-            p.text('Open', legendX + 12, legendY + 5);
-            p.text('Closed', legendX + 132, legendY + 5);
+            p.text('Open', legendX + 22, legendY + 5);
+            p.text('Closed', legendX + 114, legendY + 5);
 
-            p.textAlign(p.RIGHT, p.CENTER);
-            p.textSize(15);
-            p.fill(70);
-            p.text('Open: ' + data.totalOpen + '  |  Closed: ' + data.totalClosed, left + w, legendY + 5);
+            p.fill('#6d6862');
+            p.textFont('IBM Plex Mono');
+            p.textStyle(p.NORMAL);
+            p.textSize(12);
+            p.textAlign(p.CENTER, p.TOP);
+            p.text('If either signal strongly predicted survival, the open and closed heatmaps would occupy different cells.', left + w / 2, gridTop + gridH + 122);
 
             p.pop();
         }

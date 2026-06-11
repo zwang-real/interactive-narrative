@@ -94,7 +94,7 @@
             var colsW = (left + w - pad) - colsStart;
             var colX = [colsStart + colsW*0.27, colsStart + colsW*0.73];
 
-            p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD);
+            p.fill(COL_TEXT); p.textFont('Spectral SC'); p.textStyle(p.BOLD);
             p.textAlign(p.LEFT, p.TOP); p.textSize(22);
             p.text('Two restaurants, one difference', labelX, top + 20);
             p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15); p.fill(COL_SUB);
@@ -102,7 +102,7 @@
 
             var headY = top + 88;
             for (var c=0;c<2;c++){
-                p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(15);
+                p.fill(COL_TEXT); p.textFont('Spectral SC'); p.textStyle(p.BOLD); p.textSize(15);
                 p.textAlign(p.CENTER, p.TOP); p.text(RESTAURANTS[c].name, colX[c], headY);
             }
 
@@ -125,7 +125,7 @@
                 }
 
                 p.fill(f.counts ? COL_TEXT : COL_SUB);
-                p.textFont('Spectral'); p.textStyle(f.counts?p.BOLD:p.NORMAL); p.textSize(15);
+                p.textFont('IBM Plex Mono'); p.textStyle(f.counts?p.BOLD:p.NORMAL); p.textSize(15);
                 p.textAlign(p.LEFT, p.BOTTOM); p.text(f.label, labelX, cy);
                 p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textStyle(p.NORMAL); p.textSize(15);
                 p.textAlign(p.LEFT, p.TOP); p.text('city: ' + f.bench, labelX, cy + 2);
@@ -157,7 +157,7 @@
                 p.textAlign(p.CENTER, p.CENTER);
                 p.text('Click each row to compare.', left + w/2, bottomY + 8);
             } else if(!outcomeRevealed){
-                p.fill(COL_TEXT); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(22);
+                p.fill(COL_TEXT); p.textFont('Spectral SC'); p.textStyle(p.BOLD); p.textSize(22);
                 p.textAlign(p.CENTER, p.CENTER); p.text('Which one is still open?', left + w/2, bottomY);
                 p.textStyle(p.NORMAL);
                 var bw=200, bh=40, bx=left+w/2-bw/2, by=bottomY+20;
@@ -168,7 +168,7 @@
             } else {
                 for (var c4=0;c4<2;c4++){
                     var closed = (c4===0);
-                    p.fill(closed?COL_CLOSED:COL_GREEN); p.textFont('Spectral'); p.textStyle(p.BOLD); p.textSize(22);
+                    p.fill(closed?COL_CLOSED:COL_GREEN); p.textFont('Spectral SC'); p.textStyle(p.BOLD); p.textSize(22);
                     p.textAlign(p.CENTER, p.CENTER); p.text(closed?'Closed':'Still open', colX[c4], bottomY);
                 }
                 p.textStyle(p.NORMAL); p.fill(COL_SUB); p.textFont('IBM Plex Mono'); p.textSize(15);

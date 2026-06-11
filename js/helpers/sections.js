@@ -96,6 +96,10 @@
                         // apply layout class from data-layout attribute
                         var graphic = document.querySelector('#graphic');
                         if (graphic) {
+                            sc.steps.forEach(function (step, stepIndex) {
+                                if (stepIndex === index) step.classList.add('is-active-step');
+                                else step.classList.remove('is-active-step');
+                            });
                             graphic.classList.remove('layout-full-text', 'layout-full-viz', 'layout-viz-left');
                             var layout = sc.steps[index] && sc.steps[index].dataset && sc.steps[index].dataset.layout;
                             if (layout) graphic.classList.add('layout-' + layout);
@@ -105,7 +109,8 @@
                                     typeof window.__sketchAPI.p5.windowResized === 'function') {
                                     window.__sketchAPI.p5.windowResized();
                                 }
-                        });
+                                sc.resize();
+                            });
                         }
 
                         // Determine if the active step defines a custom active-index

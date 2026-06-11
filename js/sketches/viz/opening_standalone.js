@@ -231,14 +231,17 @@
         var scene2 = clamp01((progress - 0.14) / 0.16);
         var scene4 = clamp01((progress - 0.36) / 0.18);
         var scene5 = clamp01((progress - 0.54) / 0.12);
-        var mapScene = clamp01((progress - 0.66) / 0.10);
+        var mapScene = clamp01((progress - 0.60) / 0.10);
+        var mapLegendScene = scene2;
         var fadeOut;
 
         mapNote.innerHTML =
             '<strong>Every dot is a Philadelphia restaurant.</strong><br>' +
-            'Blue dots are still open. Red dots are closed. They are mixed across the city, which means closure is not isolated to one unsafe area. The reason restaurants disappear is deeper than location alone.';
+            '<span class="opening-inline-key opening-open-key"><i></i>Blue dots</span> are still open. ' +
+            '<span class="opening-inline-key opening-closed-key"><i></i>Red dots</span> are closed. ' +
+            'They are mixed across the city, which means closure is not isolated to one unsafe area. The reason restaurants disappear is deeper than location alone.';
         mapNote.style.opacity = String((1 - clamp01((progress - 0.975) / 0.025)) * mapScene);
-        mapLegend.style.opacity = String((1 - clamp01((progress - 0.975) / 0.025)) * mapScene);
+        mapLegend.style.opacity = String((1 - clamp01((progress - 0.975) / 0.025)) * mapLegendScene);
 
         if (scene5 > 0) {
             panel.innerHTML = '';
